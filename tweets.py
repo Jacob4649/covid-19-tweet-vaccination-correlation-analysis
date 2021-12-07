@@ -194,10 +194,15 @@ if __name__ == '__main__':
 
     for item in tweets:
         if item.location.code in locations:
-            locations[item.location.code] += item.polarity
+            t = locations[item.location.code]
+            polarity, num = t
+            polarity = polarity * num + item.polarity
+            num += 1
+            polarity /= num
+            locations[item.location.code] = (polarity, num)
         else:
-            locations[item.location.code] = item.polarity
+            locations[item.location.code] = (item.polarity, 1)
 
-    import pprint
-    pprint.pprint(sorted([(l, locations[l])
-                  for l in locations], key=lambda a: a[1], reverse=True))
+    for row in sorted([(l, locations[l])
+                       for l in locations], key=lambda a: a[1][0], reverse=True):
+        print(f'{states.code_lookup(row[0]).name}: {row[1][0]}')
