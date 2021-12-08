@@ -1,0 +1,11 @@
+# The python libraries we have used in our final project
+
+# Testing and code checking
+hypothesis
+pytest
+python-ta
+numpy
+
+# Graphics and data visualization
+plotly
+
