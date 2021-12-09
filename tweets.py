@@ -115,8 +115,9 @@ def filter_and_save(path: str, dest: str, analyzer: SentimentIntensityAnalyzer) 
     filtered = from_unfiltered_csv(path, analyzer)
     with open(dest, 'w') as csv_file:
         writer = csv.writer(csv_file, quoting=csv.QUOTE_MINIMAL)
-        for tweet in filtered:
-            writer.writerow(_get_row(tweet))
+        with ThreadPoolExecutor(max_workers=1) as csv_write_queue:
+            for tweet in filtered:
+                csv_write_queue.submit(writer.writerow, _get_row(tweet))
 
 
 def _get_row(tweet: Tweet) -> List[str]:
