@@ -25,12 +25,6 @@ class DailyMetric:
             raise ValueError("No measurement found for entered date")
 
 
-class DailyMetricCollection:
-    """
-    Class containing daily measurements of a specific floating point or integer metric.
-    """
-
-
 class LinearMetric(DailyMetric):
     """Class that uses concrete data values to
     make statistical estimates of the value of a metric at dates where
@@ -106,3 +100,14 @@ class SingleDateMetric(DailyMetric):
         """Return whether the provided date is the one this
         single date metric is for"""
         return date == self.date
+
+
+class DailyMetricCollection:
+    """
+    Class containing daily measurements of a specific floating point or integer metric.
+    """
+
+    _metrics: List[DailyMetric]
+
+    def __init__(self, data: List[SingleDateMetric]):
+        pass
