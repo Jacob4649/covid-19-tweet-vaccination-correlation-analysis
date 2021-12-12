@@ -4,7 +4,7 @@ Module for generating statistic values by date.
 
 import numpy as np
 from datetime import date, timedelta
-from typing import Iterable, List, Tuple, Union
+from typing import Any, Callable, Iterable, List, Tuple, Union
 from sklearn.linear_model import LinearRegression
 
 
@@ -46,6 +46,30 @@ class SingleDateMetric(DailyMetric):
         """Return whether the provided date is the one this
         single date metric is for"""
         return date == self.date
+
+
+def generate_metrics(data: Iterable, transform:
+                     Callable[[Any], Tuple[date, Union[float, int]]]) \
+        -> Iterable[SingleDateMetric]:
+    """Return a generator for single date metrics using the specified data,
+    and a callable that transforms each entry in the provided data, into a tuple containing
+    a date and a value"""
+    for point in data:
+        date, value = transform(point)
+        yield SingleDateMetric(date, value)
+
+
+def average_metrics(data: Iterable[SingleDateMetric]) -> List[SingleDateMetric]:
+    """Return a list of single date metrics containing the average value
+    for each provided single date metric on their given date"""
+    dates = {}
+    for point in data:
+        if point.date in dates:
+            dates[point.date].append(point)
+        else:
+            dates[point.date] = [point]
+
+    return [SingleDateMetric(date, sum(dates[date])/len(dates[date])) for date in dates]
 
 
 class LinearMetric(DailyMetric):
