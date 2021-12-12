@@ -37,6 +37,8 @@ class SingleDateMetric(DailyMetric):
 
     def __init__(self, date: date, value: Union[float, int]):
         """Sets the value and date for this single date metric"""
+        self.date = date
+        self.value = value
 
     def _get_measurement_value(self, date: date) -> Union[float, int]:
         """Gets the value stored by this single date metric"""
