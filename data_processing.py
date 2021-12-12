@@ -19,7 +19,7 @@ class DailyMetric:
 
     def get(self, date: date) -> Union[float, int]:
         """Return the measurement value for a given date"""
-        if (self._is_compatible(date)):
+        if (self.is_compatible(date)):
             return self._get_measurement_value(date)
         else:
             raise ValueError("No measurement found for entered date")
@@ -44,7 +44,7 @@ class SingleDateMetric(DailyMetric):
         """Gets the value stored by this single date metric"""
         return self.value
 
-    def _is_compatible_date(self, date: date) -> bool:
+    def is_compatible_date(self, date: date) -> bool:
         """Return whether the provided date is the one this
         single date metric is for"""
         return date == self.date
@@ -142,7 +142,7 @@ class LinearExtrapolationMetric(LinearMetric):
         else:
             self._main_date = data[0].date
 
-    def _is_compatible_date(self, date: date) -> bool:
+    def is_compatible_date(self, date: date) -> bool:
         if self._end:
             return date > self._main_date
         else:
@@ -169,7 +169,7 @@ class LinearInterpolationMetric(LinearMetric):
         self._start_date = data[0].date
         self._end_date = data[-1].date
 
-    def _is_compatible_date(self, date: date) -> bool:
+    def is_compatible_date(self, date: date) -> bool:
         return self._start_date <= date <= self._end_date
 
 
