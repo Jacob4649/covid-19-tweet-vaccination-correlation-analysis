@@ -327,5 +327,5 @@ class DailyMetricCollection:
                 next_index += 1
             elif not current_metric.is_compatible_date(current_date):
                 # interpolate
-                current_metric = self._interpolate(next_index)
+                current_metric = self._interpolate(next_index - 1)
                 next_index += 1
