@@ -243,7 +243,7 @@ class DailyMetricCollection:
                 if pointer == len(self._metrics) - 1:
                     return 1, True  # if checking biggest date, and desired is still bigger
                 # desired date less than date at next index
-                elif date < self._metrics[pointer + 1]:
+                elif date < self._metrics[pointer + 1].date:
                     return pointer, False
                 else:
                     lower = pointer
