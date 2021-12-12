@@ -19,7 +19,7 @@ class DailyMetric:
 
     def get(self, date: date) -> Union[float, int]:
         """Return the measurement value for a given date"""
-        if (self.is_compatible(date)):
+        if (self.is_compatible_date(date)):
             return self._get_measurement_value(date)
         else:
             raise ValueError("No measurement found for entered date")
