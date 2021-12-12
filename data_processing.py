@@ -265,8 +265,8 @@ class DailyMetricCollection:
 
         data = self._get_data_around(index, self.interpolation_range)
 
-        start = self.m_metrics[index]
-        end = self.m_metrics[index + 1]
+        start = self._metrics[index]
+        end = self._metrics[index + 1]
 
         return LinearInterpolationMetric(data, start, end, self._integer_outputs)
 
