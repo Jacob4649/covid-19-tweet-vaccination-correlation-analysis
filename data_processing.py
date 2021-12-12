@@ -71,7 +71,8 @@ def average_metrics(data: Iterable[SingleDateMetric]) -> List[SingleDateMetric]:
         else:
             dates[point.date] = [point]
 
-    return [SingleDateMetric(date, sum(dates[date])/len(dates[date])) for date in dates]
+    return [SingleDateMetric(date, sum(d.value for d in dates[date])/len(dates[date]))
+            for date in dates]
 
 
 class LinearMetric(DailyMetric):
