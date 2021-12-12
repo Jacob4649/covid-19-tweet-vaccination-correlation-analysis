@@ -82,7 +82,7 @@ def from_unfiltered_csv(path: str, analyzer: SentimentIntensityAnalyzer) -> Iter
     criteria for this project.
 
     Uses provided sentiment intensity analyzer to compute vader polarities"""
-    with open(path) as csv_file:
+    with open(path, encoding='utf-8') as csv_file:
         reader = csv.reader(csv_file)
         next(reader, None)  # Skip header
 
@@ -98,7 +98,7 @@ def from_filtered_csv(path: str) -> Iterable[Tweet]:
 
     Assumes all tweets in the csv file match the selection
     criteria for this project and that csv contains no header"""
-    with open(path) as csv_file:
+    with open(path, encoding='utf-8') as csv_file:
         reader = csv.reader(csv_file)
         for row in reader:
             if _filter_row(row):
@@ -113,7 +113,7 @@ def filter_and_save(path: str, dest: str, analyzer: SentimentIntensityAnalyzer) 
 
     Does not write a header"""
     filtered = from_unfiltered_csv(path, analyzer)
-    with open(dest, 'w') as csv_file:
+    with open(dest, 'w', encoding='utf-8') as csv_file:
         writer = csv.writer(csv_file, quoting=csv.QUOTE_MINIMAL)
         with ThreadPoolExecutor(max_workers=1) as csv_write_queue:
             for tweet in filtered:
