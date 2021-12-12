@@ -156,7 +156,7 @@ class LinearInterpolationMetric(LinearMetric):
     _start_date: date
     _end_date: date
 
-    def __init__(self, data: List[SingleDateMetric], int_outputs: bool):
+    def __init__(self, data: List[SingleDateMetric], start: date, end: date, int_outputs: bool):
         """Initialize a linear interpolation metric from the provided
         sorted list of single date metrics, and also indicate whether
         outputs should be integer or floating point
@@ -166,8 +166,8 @@ class LinearInterpolationMetric(LinearMetric):
             - len(data) > 1"""
         super().__init__([(metric.date, metric.value)
                           for metric in data], int_outputs)
-        self._start_date = data[0].date
-        self._end_date = data[-1].date
+        self._start_date = start
+        self._end_date = end
 
     def is_compatible_date(self, date: date) -> bool:
         return self._start_date <= date <= self._end_date
@@ -210,11 +210,11 @@ class DailyMetricCollection:
         """Gets single date metrics around a specified metric index
 
         Preconditions:
-            - 0 < index < len(self._metrics)"""
+            - 0 <= index < len(self._metrics)"""
         forward_outputs = []
         rear_outputs = []
         forward = index + 1
-        rear = index - 1
+        rear = index
         while len(forward_outputs) < data_range and forward < len(self._metrics):
             potential = self._metrics[forward]
             forward_outputs.append(potential)
@@ -258,11 +258,17 @@ class DailyMetricCollection:
         raise RuntimeError("_find_index failed to locate a suitable index")
 
     def _interpolate(self, index: int) -> LinearInterpolationMetric:
-        """Returns linear interpolation metric around the specified index in _metrics"""
+        """Returns linear interpolation metric around the specified index in _metrics
+
+        Preconditions:
+            - 0 <= index < len(self.m_metrics) - 1"""
 
         data = self._get_data_around(index, self.interpolation_range)
 
-        return LinearInterpolationMetric(data, self._integer_outputs)
+        start = self.m_metrics[index]
+        end = self.m_metrics[index + 1]
+
+        return LinearInterpolationMetric(data, start, end, self._integer_outputs)
 
     def _extrapolate(self, end: bool) -> LinearExtrapolationMetric:
         """Returns linear extrapolation metric around the beginning or end of _metrics.
