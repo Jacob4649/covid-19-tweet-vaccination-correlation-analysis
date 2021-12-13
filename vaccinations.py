@@ -32,3 +32,7 @@ class VaccinationRate:
         self.time_stamp = date.strptime(row[0], '%Y-%m-%d')
         self.total = float(row[2])
         self.daily = float(row[11])
+
+
+if __name__ == '__main__':
+    VACCINATION_PATH = 'C:\\Users\\Jacob\\Downloads\\archive\\vaccination_data.csv'
