@@ -231,7 +231,10 @@ class DailyMetricCollection:
             else:  # correct date
                 return pointer, False
             pointer = (lower + upper) // 2
-        raise RuntimeError("_find_index failed to locate a suitable index")
+        if upper == lower:
+            return upper
+        else:
+            raise RuntimeError("_find_index failed to locate a suitable index")
 
     def _interpolate(self, index: int) -> LinearInterpolationMetric:
         """Returns linear interpolation metric around the specified index in _metrics
