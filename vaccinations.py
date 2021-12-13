@@ -3,6 +3,8 @@ This file defines the dataclass VacRate and helps with orgainzing the data
 
 """
 import csv
+import states
+from locations import Location
 from concurrent import futures
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime
@@ -20,7 +22,7 @@ class VaccinationRate:
         - daily: the amount of people vaccinated daily at that location and time
 
     """
-    location: str
+    location: Location
     time_stamp: date
     total: float
     daily: float
@@ -31,7 +33,7 @@ class VaccinationRate:
 
         Preconditions:
             - len(row) == 14"""
-        self.location = row[1]
+        self.location = states.location_lookup(row[1])
         self.time_stamp = datetime.strptime(row[0], '%Y-%m-%d').date()
         self.total = float(row[2])
         self.daily = float(row[11])
@@ -52,7 +54,7 @@ def from_csv(filename: str) -> Iterable[VaccinationRate]:
         # move disk io to new thread
         with ThreadPoolExecutor(max_workers=1) as read_executor:
             # create filtered rows generator
-            filtered_rows = (row for row in reader if _filter_row(row))
+            filtered_rows = filter(_filter_row, reader)
             # execute io in executor
             for result in read_executor.map(VaccinationRate, filtered_rows):
                 yield result
@@ -63,4 +65,4 @@ if __name__ == '__main__':
 
     rates = from_csv(VACCINATION_PATH)
     for d in rates:
-        print(f'{d.location}, {d.time_stamp.isoformat()}, {d.daily}')
+        print(f'{d.location.code}, {d.time_stamp.isoformat()}, {d.daily}')
