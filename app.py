@@ -1,4 +1,8 @@
-"""Entry point for application, contains class for app state"""
+"""Contains manager class with app state"""
+
+from nltk.sentiment import SentimentIntensityAnalyzer
+from locations import Location
+from typing import List
 
 class App:
     """Class representing the state of the application at a given point
