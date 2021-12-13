@@ -50,31 +50,6 @@ class SingleDateMetric(DailyMetric):
         return date == self.date
 
 
-def generate_metrics(data: Iterable, transform:
-                     Callable[[Any], Tuple[date, Union[float, int]]]) \
-        -> Iterable[SingleDateMetric]:
-    """Return a generator for single date metrics using the specified data,
-    and a callable that transforms each entry in the provided data, into a tuple containing
-    a date and a value"""
-    for point in data:
-        date, value = transform(point)
-        yield SingleDateMetric(date, value)
-
-
-def average_metrics(data: Iterable[SingleDateMetric]) -> List[SingleDateMetric]:
-    """Return a list of single date metrics containing the average value
-    for each provided single date metric on their given date"""
-    dates = {}
-    for point in data:
-        if point.date in dates:
-            dates[point.date].append(point)
-        else:
-            dates[point.date] = [point]
-
-    return [SingleDateMetric(date, sum(d.value for d in dates[date])/len(dates[date]))
-            for date in dates]
-
-
 class LinearMetric(DailyMetric):
     """Class that uses concrete data values to
     make statistical estimates of the value of a metric at dates where
@@ -329,3 +304,28 @@ class DailyMetricCollection:
                 # interpolate
                 current_metric = self._interpolate(next_index - 1)
                 next_index += 1
+
+
+def generate_metrics(data: Iterable, transform:
+                     Callable[[Any], Tuple[date, Union[float, int]]]) \
+        -> Iterable[SingleDateMetric]:
+    """Return a generator for single date metrics using the specified data,
+    and a callable that transforms each entry in the provided data, into a tuple containing
+    a date and a value"""
+    for point in data:
+        date, value = transform(point)
+        yield SingleDateMetric(date, value)
+
+
+def average_metrics(data: Iterable[SingleDateMetric]) -> List[SingleDateMetric]:
+    """Return a list of single date metrics containing the average value
+    for each provided single date metric on their given date"""
+    dates = {}
+    for point in data:
+        if point.date in dates:
+            dates[point.date].append(point)
+        else:
+            dates[point.date] = [point]
+
+    return [SingleDateMetric(date, sum(d.value for d in dates[date])/len(dates[date]))
+            for date in dates]
