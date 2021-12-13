@@ -1,4 +1,5 @@
 from datetime import date
+import math
 import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.linear_model._glm.glm import _y_pred_deviance_derivative
@@ -13,10 +14,10 @@ if __name__ == '__main__':
     raw_tweets = tweets.from_csv(app.tweet_path, app)
     raw_vaccinations = vaccinations.from_csv(app.vaccine_path, app)
 
-    location_tweets = location_dict(raw_tweets,
-                                    lambda tweet: tweet.location)
-    location_vaccines = location_dict(raw_vaccinations,
-                                      lambda rate: rate.location)
+    # location_tweets = location_dict(raw_tweets,
+    #                                 lambda tweet: tweet.location)
+    # location_vaccines = location_dict(raw_vaccinations,
+    #                                   lambda rate: rate.location)
 
     tweet_metric = generate_metrics(
         raw_tweets, lambda tweet: (tweet.time_stamp.date(), tweet.polarity))
@@ -41,6 +42,7 @@ if __name__ == '__main__':
     diff = (end - start).days + 1
 
     import plotly.express as px
+    import plotly.graph_objects as go
     fig = px.scatter(x=tweet_list, y=vaccine_list,
                      title='Vaccination Rate As Related To Ongoing Twitter Discourse',
                      labels=dict(x="Mean VADER Score", y="Vaccination Rate"))
@@ -52,6 +54,15 @@ if __name__ == '__main__':
 
     regression = LinearRegression().fit(x_array, y_array)
 
+    # calculate residuals (technically absolute value of residuals)
+
+    predictions = [prediction[0] for prediction in
+                   regression.predict(
+        np.array(tweet_list).reshape(-1, 1))]
+
+    residuals = [abs(predictions[i] - vaccine_list[i])
+                 for i in range(len(predictions))]
+
     # plot line of best fit
 
     base_x = min(tweet_list)
@@ -61,5 +72,15 @@ if __name__ == '__main__':
     end_y = regression.predict(np.array(end_x).reshape(-1, 1))[0][0]
 
     fig.add_shape(type='line', x0=base_x, y0=base_y, x1=end_x, y1=end_y)
+
+    # plot residuals
+
+    fig.add_trace(go.Scatter(
+        x=tweet_list,
+        y=residuals,
+        name="Absolute Value Of Residuals"
+    ))
+
+    fig.update_traces(mode='markers', selector=dict(type='scatter'))
 
     fig.show()
