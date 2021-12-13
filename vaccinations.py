@@ -52,7 +52,7 @@ def from_csv(filename: str) -> Iterable[VaccinationRate]:
         # move disk io to new thread
         with ThreadPoolExecutor(max_workers=1) as read_executor:
             # create filtered rows generator
-            filtered_rows = (row for row in reader if _filter_row(row))
+            filtered_rows = filter(_filter_row, reader)
             # execute io in executor
             for result in read_executor.map(VaccinationRate, filtered_rows):
                 yield result
