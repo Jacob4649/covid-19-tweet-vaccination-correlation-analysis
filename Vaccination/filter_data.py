@@ -4,10 +4,10 @@ that the rest of the system can work with.
 """
 import csv
 from datetime import datetime
-from vacination_rate import VacRate
+from vacination_rate import VaccinationRate
 
 
-def load_data(filename: str) -> list[list[VacRate]]:
+def load_data(filename: str) -> list[list[VaccinationRate]]:
     """Return a list of vac_rates for each state of the US based on the data in filename. Each list is the data from one
     location, with the dates in the order from oldest to newest.
 
@@ -23,12 +23,11 @@ def load_data(filename: str) -> list[list[VacRate]]:
         location = ''
         current_list = []
         for row in reader:
-            if row[2] != '' and row[11] != '': # TODO: also add another part to this if statement that only allows for the US states described in the JSON file to be filtered
+            # TODO: also add another part to this if statement that only allows for the US states described in the JSON file to be filtered
+            if row[2] != '' and row[11] != '':
                 if location != row[1] and current_list != []:
                     vac_rate_so_far.append(current_list)
                     current_list = []
                 location = row[1]
-                current_list = current_list + [VacRate(row[1],
-                                                       datetime.strptime(row[0], '%Y-%m-%d'),
-                                                       float(row[2]), float(row[11]))]
+                current_list = current_list + [VaccinationRate(row)]
     return vac_rate_so_far
