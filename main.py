@@ -13,10 +13,10 @@ if __name__ == '__main__':
     raw_tweets = tweets.from_csv(app.tweet_path, app)
     raw_vaccinations = vaccinations.from_csv(app.vaccine_path, app)
 
-    # location_tweets = location_dict(raw_tweets,
-    #                                 lambda tweet: tweet.location)
-    # location_vaccines = location_dict(raw_vaccinations,
-    #                                   lambda rate: rate.location)
+    location_tweets = location_dict(raw_tweets,
+                                    lambda tweet: tweet.location)
+    location_vaccines = location_dict(raw_vaccinations,
+                                      lambda rate: rate.location)
 
     tweet_metric = generate_metrics(
         raw_tweets, lambda tweet: (tweet.time_stamp.date(), tweet.polarity))
@@ -42,6 +42,7 @@ if __name__ == '__main__':
 
     import plotly.express as px
     fig = px.scatter(x=tweet_list, y=vaccine_list,
+                     title='Vaccination Rate As Related To Ongoing Twitter Discourse',
                      labels=dict(x="Mean VADER Score", y="Vaccination Rate"))
 
     # calculate regression
