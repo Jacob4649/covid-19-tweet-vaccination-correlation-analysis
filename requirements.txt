@@ -6,6 +6,8 @@ pytest
 python-ta
 numpy
 pandas
+sklearn
+nltk
 
 # Graphics and data visualization
 plotly
