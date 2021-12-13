@@ -4,7 +4,8 @@ Module for generating statistic values by date.
 
 import numpy as np
 from datetime import date, timedelta
-from typing import Any, Callable, Iterable, List, Tuple, Union
+from typing import Any, Callable, Dict, Iterable, List, Tuple, Union
+from locations import Location
 from sklearn.linear_model import LinearRegression
 
 
@@ -48,31 +49,6 @@ class SingleDateMetric(DailyMetric):
         """Return whether the provided date is the one this
         single date metric is for"""
         return date == self.date
-
-
-def generate_metrics(data: Iterable, transform:
-                     Callable[[Any], Tuple[date, Union[float, int]]]) \
-        -> Iterable[SingleDateMetric]:
-    """Return a generator for single date metrics using the specified data,
-    and a callable that transforms each entry in the provided data, into a tuple containing
-    a date and a value"""
-    for point in data:
-        date, value = transform(point)
-        yield SingleDateMetric(date, value)
-
-
-def average_metrics(data: Iterable[SingleDateMetric]) -> List[SingleDateMetric]:
-    """Return a list of single date metrics containing the average value
-    for each provided single date metric on their given date"""
-    dates = {}
-    for point in data:
-        if point.date in dates:
-            dates[point.date].append(point)
-        else:
-            dates[point.date] = [point]
-
-    return [SingleDateMetric(date, sum(d.value for d in dates[date])/len(dates[date]))
-            for date in dates]
 
 
 class LinearMetric(DailyMetric):
@@ -329,3 +305,42 @@ class DailyMetricCollection:
                 # interpolate
                 current_metric = self._interpolate(next_index - 1)
                 next_index += 1
+
+
+def generate_metrics(data: Iterable, transform:
+                     Callable[[Any], Tuple[date, Union[float, int]]]) \
+        -> Iterable[SingleDateMetric]:
+    """Return a generator for single date metrics using the specified data,
+    and a callable that transforms each entry in the provided data, into a tuple containing
+    a date and a value"""
+    for point in data:
+        date, value = transform(point)
+        yield SingleDateMetric(date, value)
+
+
+def average_metrics(data: Iterable[SingleDateMetric]) -> List[SingleDateMetric]:
+    """Return a list of single date metrics containing the average value
+    for each provided single date metric on their given date"""
+    dates = {}
+    for point in data:
+        if point.date in dates:
+            dates[point.date].append(point)
+        else:
+            dates[point.date] = [point]
+
+    return [SingleDateMetric(date, sum(d.value for d in dates[date])/len(dates[date]))
+            for date in dates]
+
+def location_dict(data: Iterable, location_get: Callable[[Any], Location]) -> Dict[str, List[Any]]:
+    """Return a dictionary of location codes mapped to lists of objects at those locations.
+    
+    Uses the objects in the provided data iterable, and the location_get function
+    to get the location of items in data"""
+    locations = {}
+    for item in data:
+        location = location_get(item)
+        if location.code in locations:
+            locations[location.code].append(item)
+        else:
+            locations[location.code] = [item]
+    return locations
