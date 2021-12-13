@@ -4,7 +4,7 @@ that the rest of the system can work with.
 """
 import csv
 from datetime import datetime
-from vacination_rate import VaccinationRate
+from vaccinations import VaccinationRate
 
 
 def load_data(filename: str) -> list[list[VaccinationRate]]:
