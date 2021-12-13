@@ -5,7 +5,7 @@ and their rollout across the united states
 
 from __future__ import annotations
 from concurrent import futures
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 import csv
 from datetime import datetime
 from typing import Iterable, List, Optional
@@ -40,7 +40,7 @@ class Tweet(object):
     raw_location: str
     polarity: float
 
-    def __init__(self, row: List[str], filtered=False):
+    def __init__(self, row: List[str], analyzer: SentimentIntensityAnalyzer, filtered=False):
         """Create a tweet from a
         row in a csv of tweets.
 
@@ -65,17 +65,11 @@ class Tweet(object):
             self.followers = int(float(row[4]))
             self.time_stamp = _from_csv_date(row[8])
             self.raw_location = row[1]
-
-    def calculate_vader(self, analyzer: SentimentIntensityAnalyzer) -> Tweet:
-        """Calculate the vader polarity of this tweet, then return the calling tweet
-
-        Uses the provided sentiment intensity analyzer to calculate polarity"""
-        scores = analyzer.polarity_scores(self.tweet)
-        self.polarity = scores['compound']
-        return self
+            scores = analyzer.polarity_scores(self.tweet)
+            self.polarity = scores['compound']
 
 
-def from_unfiltered_csv(path: str, analyzer: SentimentIntensityAnalyzer) -> Iterable[Tweet]:
+def from_csv(path: str, analyzer: SentimentIntensityAnalyzer) -> Iterable[Tweet]:
     """Return a generator for tweets from a csv file.
 
     Yields only tweets determined to match the selection
@@ -86,11 +80,13 @@ def from_unfiltered_csv(path: str, analyzer: SentimentIntensityAnalyzer) -> Iter
         reader = csv.reader(csv_file)
         next(reader, None)  # Skip header
 
-        with ThreadPoolExecutor(max_workers=10) as polarity_executor:
-            for tweet in futures.as_completed(polarity_executor.submit(
-                    Tweet.calculate_vader, Tweet(row), analyzer)
-                    for row in reader if _filter_row(row)):
-                yield tweet.result()
+        with ProcessPoolExecutor(max_workers=10) as reader_executor:
+            # filter out bad rows
+            filtered_rows = filter(_filter_row, reader)
+            # disk io, object initialization, and vader polarity assignment
+            def create_tweet(row): return Tweet(row, analyzer, False)
+            for result in reader_executor.map(create_tweet, filtered_rows):
+                yield result
 
 
 def from_filtered_csv(path: str) -> Iterable[Tweet]:
@@ -112,7 +108,7 @@ def filter_and_save(path: str, dest: str, analyzer: SentimentIntensityAnalyzer) 
     Uses the provided sentiment intensity analyzer to determine vader scores
 
     Does not write a header"""
-    filtered = from_unfiltered_csv(path, analyzer)
+    filtered = from_csv(path, analyzer)
     with open(dest, 'w', encoding='utf-8') as csv_file:
         writer = csv.writer(csv_file, quoting=csv.QUOTE_MINIMAL)
         with ThreadPoolExecutor(max_workers=1) as csv_write_queue:
@@ -139,7 +135,7 @@ def _filter_row(row: List[str]) -> bool:
 
     Preconditions:
         - len(row) == 13"""
-    return row[4] != '' and _from_csv_date(row[8]) is not None \
+    return len(row) == 13 and row[4] != '' and _from_csv_date(row[8]) is not None \
         and states.location_lookup(row[1]) is not None
 
 
@@ -181,15 +177,15 @@ def _print_tweet(tweet: Tweet) -> None:
 
 if __name__ == '__main__':
     import os.path
-    UNFILTERED_PATH = '/home/jacob/Downloads/covidvaccine.csv'
-    FILTERED_PATH = '/home/jacob/Downloads/filtered_covidvaccine.csv'
+    UNFILTERED_PATH = 'C:\\Users\\Jacob\\Downloads\\archive\\covidvaccine.csv'
+    FILTERED_PATH = 'C:\\Users\\Jacob\\Downloads\\archive\\filtered.csv'
 
     ANALYZER = SentimentIntensityAnalyzer()
 
-    if not os.path.isfile(FILTERED_PATH):
-        filter_and_save(UNFILTERED_PATH, FILTERED_PATH, ANALYZER)
+    # if not os.path.isfile(FILTERED_PATH):
+    #     filter_and_save(UNFILTERED_PATH, FILTERED_PATH, ANALYZER)
 
-    tweets = from_filtered_csv(FILTERED_PATH)
+    tweets = from_csv(UNFILTERED_PATH, ANALYZER)
 
     locations = {}
 
