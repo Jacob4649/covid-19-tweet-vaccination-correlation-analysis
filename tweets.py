@@ -80,7 +80,7 @@ def from_csv(path: str, analyzer: SentimentIntensityAnalyzer) -> Iterable[Tweet]
         reader = csv.reader(csv_file)
         next(reader, None)  # Skip header
 
-        with ProcessPoolExecutor(max_workers=10) as reader_executor:
+        with ThreadPoolExecutor(max_workers=10) as reader_executor:
             # filter out bad rows
             filtered_rows = filter(_filter_row, reader)
             # disk io, object initialization, and vader polarity assignment
@@ -177,7 +177,8 @@ def _print_tweet(tweet: Tweet) -> None:
 
 if __name__ == '__main__':
     import os.path
-    UNFILTERED_PATH = 'C:\\Users\\Jacob\\Downloads\\archive\\covidvaccine.csv'
+    UNFILTERED_PATH = '/home/jacob/Downloads/covidvaccine.csv'
+    #'C:\\Users\\Jacob\\Downloads\\archive\\covidvaccine.csv'
     FILTERED_PATH = 'C:\\Users\\Jacob\\Downloads\\archive\\filtered.csv'
 
     ANALYZER = SentimentIntensityAnalyzer()
