@@ -5,6 +5,7 @@ hypothesis
 pytest
 python-ta
 numpy
+pandas
 
 # Graphics and data visualization
 plotly
