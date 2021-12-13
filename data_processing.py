@@ -232,7 +232,7 @@ class DailyMetricCollection:
                 return pointer, False
             pointer = (lower + upper) // 2
         if upper == lower:
-            return upper
+            return upper, False
         else:
             raise RuntimeError("_find_index failed to locate a suitable index")
 

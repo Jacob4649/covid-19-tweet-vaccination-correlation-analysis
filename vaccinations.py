@@ -40,9 +40,11 @@ class VaccinationRate:
         self.daily = float(row[11])
 
 
-def _filter_row(row: List[str]) -> bool:
-    """Return whether a row contains suitable vaccination data"""
-    return len(row) == 14 and row[11] != '' and row[2] != ''
+def _filter_row(row: List[str], app: App) -> bool:
+    """Return whether a row contains suitable vaccination data,
+    takes a row and an app state bundle"""
+    return len(row) == 14 and row[11] != '' and row[2] != '' \
+        and app.location_lookup(row[1]) is not None
 
 
 def from_csv(filename: str, app: App) -> Iterable[VaccinationRate]:
@@ -53,8 +55,14 @@ def from_csv(filename: str, app: App) -> Iterable[VaccinationRate]:
         reader = csv.reader(f)
         next(reader, None)  # skip the header
 
+        def vaccine_filter(row: List[str]) -> bool:
+            """Return whether a vaccination rate should be created from a csv row
+
+            Function for use with map that filters csv rows"""
+            return _filter_row(row, app)
+
         # create filtered rows generator
-        filtered_rows = filter(_filter_row, reader)
+        filtered_rows = filter(vaccine_filter, reader)
 
         def create_rate(row: List[str]) -> VaccinationRate:
             """Return a vaccination rate created from a csv row

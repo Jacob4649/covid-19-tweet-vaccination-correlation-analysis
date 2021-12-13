@@ -10,15 +10,15 @@ if __name__ == '__main__':
     raw_tweets = tweets.from_csv(app.tweet_path, app)
     raw_vaccinations = vaccinations.from_csv(app.vaccine_path, app)
 
-    location_tweets = location_dict(raw_tweets,
-                                    lambda tweet: tweet.location)
-    location_vaccines = location_dict(raw_vaccinations,
-                                      lambda rate: rate.location)
+    # location_tweets = location_dict(raw_tweets,
+    #                                 lambda tweet: tweet.location)
+    # location_vaccines = location_dict(raw_vaccinations,
+    #                                   lambda rate: rate.location)
 
     tweet_metric = generate_metrics(
         raw_tweets, lambda tweet: (tweet.time_stamp.date(), tweet.polarity))
     vaccine_metric = generate_metrics(
-        raw_vaccinations, lambda vaccine: (vaccine.date, vaccine.daily))
+        raw_vaccinations, lambda vaccine: (vaccine.time_stamp, vaccine.daily))
 
     average_tweet_polarity = average_metrics(tweet_metric)
     average_vaccine_rate = average_metrics(vaccine_metric)
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     tweet_collection = DailyMetricCollection(average_tweet_polarity, False)
     vaccine_collection = DailyMetricCollection(average_vaccine_rate, True)
 
-    start = date(2020, 8, 30)
+    start = date(2021, 2, 28)
     end = date(2021, 11, 1)
 
     tweet_range = tweet_collection.get(start, end)
@@ -37,9 +37,8 @@ if __name__ == '__main__':
 
     diff = (end - start).days + 1
 
-    for i in range(diff):
-        print(f'{tweet_range[i]}, {vaccine_range[i]}')
-
     import plotly.express as px
-    fig = px.scatter(x=tweet_range, y=vaccine_range)
+    fig = px.scatter(x=tweet_list, y=vaccine_list,
+                     labels=dict(x="Mean VADER Score", y="Vaccination Rate"))
+    fig.add_shape(type='Line', x0=0, y0=0, x1=100, y1=100)
     fig.show()
