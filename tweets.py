@@ -79,7 +79,7 @@ def from_csv(path: str, analyzer: SentimentIntensityAnalyzer) -> Iterable[Tweet]
             tweet from a csv row"""
             return Tweet(row, analyzer)
 
-        with ProcessPoolExecutor(max_workers=10) as reader_executor:
+        with ThreadPoolExecutor(max_workers=10) as reader_executor:
             # disk io, object initialization, and vader polarity assignment
             for result in reader_executor.map(create_tweet, filtered_rows):
                 yield result
