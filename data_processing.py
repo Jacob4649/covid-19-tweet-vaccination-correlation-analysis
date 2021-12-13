@@ -4,7 +4,8 @@ Module for generating statistic values by date.
 
 import numpy as np
 from datetime import date, timedelta
-from typing import Any, Callable, Iterable, List, Tuple, Union
+from typing import Any, Callable, Dict, Iterable, List, Tuple, Union
+from locations import Location
 from sklearn.linear_model import LinearRegression
 
 
@@ -329,3 +330,17 @@ def average_metrics(data: Iterable[SingleDateMetric]) -> List[SingleDateMetric]:
 
     return [SingleDateMetric(date, sum(d.value for d in dates[date])/len(dates[date]))
             for date in dates]
+
+def location_dict(data: Iterable, location_get: Callable[[Any], Location]) -> Dict[str, List[Any]]:
+    """Return a dictionary of location codes mapped to lists of objects at those locations.
+    
+    Uses the objects in the provided data iterable, and the location_get function
+    to get the location of items in data"""
+    locations = {}
+    for item in data:
+        location = location_get(item)
+        if location.code in locations:
+            locations[location.code].append(item)
+        else:
+            locations[location.code] = [item]
+    return locations
