@@ -1,4 +1,7 @@
-from datetime import date, timedelta
+from datetime import date
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.linear_model._glm.glm import _y_pred_deviance_derivative
 from app import App
 import vaccinations
 import tweets
@@ -40,5 +43,22 @@ if __name__ == '__main__':
     import plotly.express as px
     fig = px.scatter(x=tweet_list, y=vaccine_list,
                      labels=dict(x="Mean VADER Score", y="Vaccination Rate"))
-    fig.add_shape(type='Line', x0=0, y0=0, x1=100, y1=100)
+
+    # calculate regression
+
+    x_array = np.array(tweet_list).reshape(-1, 1)
+    y_array = np.array(vaccine_list).reshape(-1, 1)
+
+    regression = LinearRegression().fit(x_array, y_array)
+
+    # plot line of best fit
+
+    base_x = min(tweet_list)
+    end_x = max(tweet_list)
+
+    base_y = regression.predict(np.array(base_x).reshape(-1, 1))[0][0]
+    end_y = regression.predict(np.array(end_x).reshape(-1, 1))[0][0]
+
+    fig.add_shape(type='line', x0=base_x, y0=base_y, x1=end_x, y1=end_y)
+
     fig.show()
