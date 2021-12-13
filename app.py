@@ -4,7 +4,7 @@ from nltk.sentiment import SentimentIntensityAnalyzer
 from locations import Location
 from typing import List, Optional
 import states
-from tweets import Tweet
+from data_processing import generate_metrics, average_metrics, location_dict
 
 
 class App:
@@ -28,6 +28,7 @@ class App:
         self.tweet_path = '/home/jacob/Downloads/covidvaccine.csv'
         self.vaccine_path = '/home/jacob/Downloads/us_state_vaccinations.csv'
         self.locations = states.STATES
+        self.analyzer = SentimentIntensityAnalyzer()
 
     def location_code_lookup(self, code: str) -> Location:
         """Return a location with a code matching the provided one.

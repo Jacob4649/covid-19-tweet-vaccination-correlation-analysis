@@ -3,6 +3,7 @@ This file defines the dataclass VacRate and helps with orgainzing the data
 
 """
 import csv
+from app import App
 import states
 from locations import Location
 from concurrent import futures
@@ -27,13 +28,13 @@ class VaccinationRate:
     total: float
     daily: float
 
-    def __init__(self, row: List[str]):
+    def __init__(self, row: List[str], app: App):
         """Initialize an instance of this vaccination rate class
-        from a row from a csv
+        from a row from a csv, and an app state bundle
 
         Preconditions:
             - len(row) == 14"""
-        self.location = states.location_lookup(row[1])
+        self.location = app.location_lookup(row[1])
         self.time_stamp = datetime.strptime(row[0], '%Y-%m-%d').date()
         self.total = float(row[2])
         self.daily = float(row[11])
@@ -44,19 +45,28 @@ def _filter_row(row: List[str]) -> bool:
     return len(row) == 14 and row[11] != '' and row[2] != ''
 
 
-def from_csv(filename: str) -> Iterable[VaccinationRate]:
-    """Return generator for vaccination rate objects"""
+def from_csv(filename: str, app: App) -> Iterable[VaccinationRate]:
+    """Return generator for vaccination rate objects, from
+    the provided csv, using the provided app state"""
 
     with open(filename, encoding='utf-8') as f:
         reader = csv.reader(f)
         next(reader, None)  # skip the header
 
+        # create filtered rows generator
+        filtered_rows = filter(_filter_row, reader)
+
+        def create_rate(row: List[str]) -> VaccinationRate:
+            """Return a vaccination rate created from a csv row
+
+            Function for use with map that creates a
+            vaccination rate from a csv row"""
+            return VaccinationRate(row, app)
+
         # move disk io to new thread
         with ThreadPoolExecutor(max_workers=1) as read_executor:
-            # create filtered rows generator
-            filtered_rows = filter(_filter_row, reader)
             # execute io in executor
-            for result in read_executor.map(VaccinationRate, filtered_rows):
+            for result in read_executor.map(create_rate, filtered_rows):
                 yield result
 
 

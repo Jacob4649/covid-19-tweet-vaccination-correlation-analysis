@@ -34,7 +34,7 @@ class SingleDateMetric(DailyMetric):
         - value: the value for this metric"""
 
     value: Union[float, int]
-    date: date
+    date: 'date'
 
     def __init__(self, date: date, value: Union[float, int]):
         """Sets the value and date for this single date metric"""
@@ -331,9 +331,10 @@ def average_metrics(data: Iterable[SingleDateMetric]) -> List[SingleDateMetric]:
     return [SingleDateMetric(date, sum(d.value for d in dates[date])/len(dates[date]))
             for date in dates]
 
+
 def location_dict(data: Iterable, location_get: Callable[[Any], Location]) -> Dict[str, List[Any]]:
     """Return a dictionary of location codes mapped to lists of objects at those locations.
-    
+
     Uses the objects in the provided data iterable, and the location_get function
     to get the location of items in data"""
     locations = {}
