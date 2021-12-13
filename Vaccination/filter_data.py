@@ -16,7 +16,7 @@ def load_data(filename: str) -> list[list[VaccinationRate]]:
 
     with open(filename) as f:
         reader = csv.reader(f, delimiter=',')
-        next(reader)  # skip the header
+        next(reader, None)  # skip the header
 
         # an accumulator that helps create the lists
         vac_rate_so_far = []
