@@ -9,7 +9,7 @@ Copyright and Usage Information
 ===============================
 This file is Copyright (c) 2021 Jacob Klimczak, Ryan Merheby and Sean Ryan.
 """
-from datetime import date, timedelta
+import datetime
 import ssl
 import nltk
 import plotly.express as px
@@ -42,9 +42,9 @@ if __name__ == '__main__':
     raw_vaccinations = list(vaccinations.from_csv(app.vaccine_path, app))
 
     # choose start and end dates
-    start = date(2021, 2, 28)
-    end = date(2021, 11, 1)
-    half = start + timedelta(days=((end - start).days / 2))
+    start = datetime.date(2021, 2, 28)
+    end = datetime.date(2021, 11, 1)
+    half = start + datetime.timedelta(days=((end - start).days / 2))
 
     # split data by state
     location_tweets = location_dict(raw_tweets,
