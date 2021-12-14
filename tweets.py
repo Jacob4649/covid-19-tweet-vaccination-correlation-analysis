@@ -150,7 +150,7 @@ if __name__ == '__main__':
                           'nltk.sentiment',
                           'app',
                           'locations',
-                          'states'],
+                          'typing'],
         'allowed-io': ['from_csv'],
         'max-line-length': 100,
         'disable': ['R1705', 'C0200']
