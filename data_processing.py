@@ -93,7 +93,11 @@ class LinearMetric(DailyMetric):
         date_array = [self._convert_date(date)]
         input_data = self._convert_numpy(date_array)
         output = self._regression.predict(input_data)
-        return output[0][0]
+        out_value = output[0][0]
+        if self._integer_outputs:
+            return round(out_value)
+        else:
+            return out_value
 
 
 class LinearExtrapolationMetric(LinearMetric):
@@ -352,7 +356,9 @@ def location_dict(data: Iterable, location_get: Callable[[Any], Location]) -> Di
     return locations
 
 
-def location_stats(vaccine_dict: Dict[str, List[VaccinationRate]], tweet_dict: Dict[str, List[Tweet]], code: str, start: date, end: date) -> Tuple[List[float], List[int]]:
+def location_stats(vaccine_dict: Dict[str, List[VaccinationRate]],
+                   tweet_dict: Dict[str, List[Tweet]], code: str, start: date,
+                   end: date) -> Tuple[List[float], List[int]]:
     """Return a tuple with daily mean vader scores, and daily mean vaccinations
     for the specified state between the start and end dates
 
