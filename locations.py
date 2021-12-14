@@ -12,7 +12,6 @@ This file is Copyright (c) 2021 Jacob Klimczak, Ryan Merheby and Sean Ryan.
 
 
 from dataclasses import dataclass
-from typing import Tuple
 
 
 @dataclass
@@ -32,7 +31,7 @@ class Location():
 
     code: str
     name: str
-    related_terms: Tuple
+    related_terms: list
 
 
 if __name__ == '__main__':
