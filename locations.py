@@ -27,7 +27,12 @@ class Location():
     Representation Invariants:
         - len(code) == 2
         - code.upper() == code
-        - code.isalpha()"""
+        - code.isalpha()
+
+    >>> l = Location('FG', 'Fig', ['Bed'])
+    >>> l.name
+    'Fig'
+    """
 
     code: str
     name: str
@@ -47,3 +52,6 @@ if __name__ == '__main__':
         'max-line-length': 100,
         'disable': ['R1705', 'C0200']
     })
+
+    import doctest
+    doctest.testmod()
