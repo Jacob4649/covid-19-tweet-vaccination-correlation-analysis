@@ -160,7 +160,7 @@ if __name__ == '__main__':
                                                most, start, end)
 
     most_fig = visualization.vaccination_twitter_plot(
-        most_tweets, most_vaccine, 'Vaccination Information For Most Correlated State')
+        most_tweets, most_vaccine, f'Vaccination Information For {app.location_code_lookup(most).name}')
 
     figures.append(visualization.unwrap_figure(most_fig.to_html()))
 
