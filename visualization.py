@@ -111,3 +111,14 @@ def _read_template(path: str) -> str:
     at the specified path"""
     with open(path, encoding='utf-8') as template:
         return '\n'.join(template.readlines())
+
+
+def _insert_into_template(insert: str, path: str) -> str:
+    """Return the html template file at the specified path,
+    with the body replaced by the specified insert"""
+    return _read_template(path).replace('{INSERT FIGURES HERE}', insert)
+
+
+def _unwrap_figure_html(figure: str) -> str:
+    """Return the html representation of a figure, without its enclosing body tags"""
+    return figure.replace('<body>', '').replace('</body>', '')
