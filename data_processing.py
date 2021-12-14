@@ -3,6 +3,7 @@ Module for generating statistic values by date.
 """
 
 import numpy as np
+from scipy.stats import pearsonr
 from datetime import date, timedelta
 from typing import Any, Callable, Dict, Iterable, List, Tuple, Union
 from locations import Location
@@ -358,7 +359,7 @@ def location_dict(data: Iterable, location_get: Callable[[Any], Location]) -> Di
 
 def location_stats(vaccine_dict: Dict[str, List[VaccinationRate]],
                    tweet_dict: Dict[str, List[Tweet]], code: str, start: date,
-                   end: date) -> Tuple[List[float], List[int]]:
+                   end: date) -> Tuple[List[float], List[float]]:
     """Return a tuple with daily mean vader scores, and daily mean vaccinations
     for the specified state between the start and end dates
 
@@ -386,3 +387,9 @@ def location_stats(vaccine_dict: Dict[str, List[VaccinationRate]],
     vaccine_list = list(vaccine_range)
 
     return tweet_list, vaccine_list
+
+
+def calculate_correlation(tweets: List[float], vaccines: List[float]) -> float:
+    """Return the pearson's correlation coefficient between
+    the lists of tweet and vaccine information"""
+    return pearsonr(tweets, vaccines)[0]
