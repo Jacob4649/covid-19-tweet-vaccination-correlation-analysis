@@ -3,7 +3,8 @@ Location Grouping
 
 Module Description
 ==================
-Module with functions for manipulating tweets and vaccine rates by their location
+Module with functions for manipulating collections of
+tweets and vaccine rates by their location
 
 Copyright and Usage Information
 ===============================
