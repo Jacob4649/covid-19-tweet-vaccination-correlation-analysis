@@ -35,6 +35,7 @@ class App:
         self.vaccine_path = _get_dataset('vaccine.csv')
         self.template_path = _get_resource('output-template.html')
         self.output_path = _get_absolute_path('output.html')
+        self.states_path = _get_resource('states.json')
         self.locations = states.unpack_json_into_locations(
             self.states_path)
         self.analyzer = SentimentIntensityAnalyzer()
