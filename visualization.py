@@ -214,4 +214,7 @@ if __name__ == '__main__':
                        '_write_output'],
         'max-line-length': 100,
         'disable': ['R1705', 'C0200', 'C0412']
+        # Note: disabling C0412 because it wrongly suggests that
+        # we should group the plotly.graph_objects and plotly.express
+        # imports
     })
