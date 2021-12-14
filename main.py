@@ -149,7 +149,7 @@ if __name__ == '__main__':
     figures.append(visualization.text_block('Here are a few close up graphs of the notable states in ' +
                                             'this analysis. The 3 most and 3 least correlated states ' +
                                             'are shown. Also worth noting, is that no data is available ' +
-                                            'on West Virgina, as no Tweets were able to be filtered out for it.'))
+                                            'on states where no Tweets were able to be filtered out for.'))
 
     # sort states by correlation
     sort = sorted(correlations.keys(),
