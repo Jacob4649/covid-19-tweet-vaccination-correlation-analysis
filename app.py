@@ -30,10 +30,9 @@ class App:
 
     def __init__(self):
         """Initialize app object"""
-        self.tweet_path = '/home/jacob/Downloads/covidvaccine.csv'
-        self.vaccine_path = '/home/jacob/Downloads/us_state_vaccinations.csv'
-        self.template_path = _get_absolute_path(
-            f'Resources{os.path.sep}output-template.html')
+        self.tweet_path = _get_dataset('twitter.csv')
+        self.vaccine_path = _get_dataset('vaccine.csv')
+        self.template_path = _get_resource('output-template.html')
         self.output_path = _get_absolute_path('output.html')
         self.locations = states.STATES
         self.analyzer = SentimentIntensityAnalyzer()
@@ -95,6 +94,18 @@ def _get_absolute_path(path: str) -> str:
     """Return the absolute path of the specified relative path"""
     return os.path.dirname(
         os.path.realpath(__file__)) + os.path.sep + path
+
+
+def _get_resource(path: str) -> str:
+    """Return the path to an item in the resources directory using the
+    name of the file"""
+    return _get_absolute_path(f'Resources{os.path.sep}{path}')
+
+
+def _get_dataset(path: str) -> str:
+    """Return the path to an item in the datasets directory using the
+    name of the file"""
+    return _get_absolute_path(f'Datasets{os.path.sep}{path}')
 
 
 if __name__ == '__main__':
