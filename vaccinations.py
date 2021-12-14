@@ -3,7 +3,7 @@ Vaccinations
 
 Module Description
 ==================
-Bundles data about vaccination rates into a dataclass and contains functions that 
+Bundles data about vaccination rates into a dataclass and contains functions that
 help organize that data
 
 Copyright and Usage Information
@@ -12,13 +12,11 @@ This file is Copyright (c) 2021 Jacob Klimczak, Ryan Merheby and Sean Ryan.
 """
 
 import csv
-from app import App
-import states
-from locations import Location
-from concurrent import futures
 from concurrent.futures import ThreadPoolExecutor
-import datetime
 from typing import Iterable, List
+import datetime
+from app import App
+from locations import Location
 
 
 class VaccinationRate:
@@ -37,7 +35,7 @@ class VaccinationRate:
     total: float
     daily: float
 
-    def __init__(self, row: List[str], app: App):
+    def __init__(self, row: List[str], app: App) -> None:
         """Initialize an instance of this vaccination rate class
         from a row from a csv, and an app state bundle
 
@@ -95,8 +93,15 @@ if __name__ == '__main__':
     python_ta.contracts.check_all_contracts()
 
     python_ta.check_all(config={
-        'extra-imports': [],
-        'allowed-io': [],
+        'extra-imports': ['csv',
+                          'app',
+                          'states',
+                          'concurrent',
+                          'concurrent.futures',
+                          'datetime',
+                          'locations'],
+        'allowed-io': ['from_csv',
+                       ],
         'max-line-length': 100,
         'disable': ['R1705', 'C0200']
     })

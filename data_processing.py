@@ -142,8 +142,8 @@ class LinearInterpolationMetric(LinearMetric):
     _start_date: datetime.date
     _end_date: datetime.date
 
-    def __init__(self, data: List[SingleDateMetric], start: datetime.date, end: datetime.date, int_outputs: bool) \
-            -> None:
+    def __init__(self, data: List[SingleDateMetric], start: datetime.date,
+                 end: datetime.date, int_outputs: bool) -> None:
         """Initialize a linear interpolation metric from the provided
         sorted list of single date metrics, and also indicate whether
         outputs should be integer or floating point
@@ -322,7 +322,8 @@ class DailyMetricCollection:
                 next_index += 1
 
 
-def generate_metrics(data: Iterable, transform: Callable[[Any], Tuple[datetime.date, Union[float, int]]]) \
+def generate_metrics(data: Iterable, transform: Callable[[Any], Tuple[datetime.date,
+                                                                      Union[float, int]]]) \
         -> Iterable[SingleDateMetric]:
     """Return a generator for single date metrics using the specified data,
     and a callable that transforms each entry in the provided data, into a tuple containing
