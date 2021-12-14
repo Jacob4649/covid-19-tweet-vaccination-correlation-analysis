@@ -10,14 +10,25 @@ from app import App
 import webbrowser
 
 
-def vaccination_twitter_plot(twitter: List[float], vaccine: List[int], title: str) -> go.Figure:
+def vaccination_twitter_plot(twitter: List[float],
+                             vaccine: List[int], title: str,
+                             regression_twitter: List[float] = None,
+                             regression_vaccine: List[int] = None) -> go.Figure:
     """Get a figure showing the relationship between
     the provided tweet and vaccine information, with the provided title
+
+    Optionally, can provide regression twitter and vaccine info to
+    calculate line of best fit with different data from plot data
 
     Preconditions:
         - len(twitter) == len(vaccine)"""
     # calculate regression
-    regression = _calculate_regression(twitter, vaccine)
+
+    if regression_twitter is None:
+        regression_twitter = twitter
+    if regression_vaccine is None:
+        regression_vaccine = vaccine
+    regression = _calculate_regression(regression_twitter, regression_vaccine)
 
     # calculate residuals (technically absolute value of residuals)
 

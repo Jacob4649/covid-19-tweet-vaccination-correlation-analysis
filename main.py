@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 from typing import Dict, List, Tuple
 from app import App
 import vaccinations
@@ -80,6 +80,7 @@ if __name__ == '__main__':
     # choose start and end dates
     start = date(2021, 2, 28)
     end = date(2021, 11, 1)
+    half = start + timedelta(days=((end - start).days / 2))
 
     # split data by state
     location_tweets = location_dict(raw_tweets,
@@ -112,7 +113,7 @@ if __name__ == '__main__':
 
     # visualize data
     fig = visualization.vaccination_twitter_plot(
-        tweet_list, vaccine_list, 'Vaccination Rate As Related To Ongoing Twitter Discourse')
+        tweet_list, vaccine_list, 'Vaccination Rate As Related To Ongoing Twitter Discourse In The US')
 
     chloropleth = visualization.chloropleth(
         correlations, 'Correlation Between Twitter Discourse And Vaccination Rate',
@@ -174,5 +175,28 @@ if __name__ == '__main__':
     show_correlated_state(-3, 'Third Most Negatively Correlated State')
     show_correlated_state(-2, 'Second Most Negatively Correlated State')
     show_correlated_state(-1, 'Most Negatively Correlated State')
+
+    # modeled second half
+    figures.append(visualization.text_block(
+        '<div style="text-align: center; font-size: 24pt; padding: 24pt">MODEL PREDICTIONS</div>'))
+    figures.append(visualization.text_block(
+        'Here we will examine how well a linear model could have predicted vaccination ' +
+        'rates based on Twitter data at an arbitrary moment in time. The graph below has ' +
+        'the same data as the first graph in this report, but this time, the line of best ' +
+        'fit was calculated using only datapoints from the first half of our date range.'))
+
+    # filter for data only from first half
+    half_tweet_range = tweet_collection.get(start, half)
+    half_vaccine_range = vaccine_collection.get(start, half)
+
+    half_vaccine_list = list(half_vaccine_range)
+    half_tweet_list = list(half_tweet_range)
+
+    # display chart with data
+    model = visualization.vaccination_twitter_plot(
+        tweet_list, vaccine_list, 'Vaccination Rate As Related To Ongoing Twitter Discourse In The US',
+        regression_twitter=half_tweet_list, regression_vaccine=half_vaccine_list)
+
+    figures.append(visualization.unwrap_figure(model.to_html()))
 
     visualization.output(figures, app.output_path, app.template_path)
