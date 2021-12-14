@@ -47,10 +47,10 @@ def location_correlation(vaccine_dict: Dict[str, List[VaccinationRate]],
     """Return a dictionary mapping state codes to the correlation 
     between state vaccination and state twitter discourse"""
     output = {}
-    for key in location_tweets:
-        if key in location_vaccines:
+    for key in tweet_dict:
+        if key in vaccine_dict:
             a, b = location_stats(
-                location_vaccines, location_tweets, key, start, end)
+                vaccine_dict, tweet_dict, key, start, end)
             c = calculate_correlation(a, b)
             output[key] = c
     return output
