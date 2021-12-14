@@ -4,18 +4,15 @@ and their rollout across the united states
 """
 
 from __future__ import annotations
-from concurrent import futures
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 import csv
 from datetime import datetime
 from typing import Iterable, List, Optional
-from nltk.sentiment import SentimentIntensityAnalyzer
 from app import App
 from locations import Location
-import states
 
 
-class Tweet(object):
+class Tweet:
     """
     Class representing a single tweet made about COVID
     vaccination
@@ -41,7 +38,7 @@ class Tweet(object):
     raw_location: str
     polarity: float
 
-    def __init__(self, row: List[str], app: App):
+    def __init__(self, row: List[str], app: App) -> None:
         """Create a tweet from a
         row in a csv of tweets and an app state bundle class
 
@@ -128,34 +125,21 @@ def _from_csv_date(date: str) -> Optional[datetime]:
         return datetime.strptime(date, '%d-%m-%Y %H:%M:%S')
     except ValueError:
         pass
+    return None
 
 
 if __name__ == '__main__':
-    import os.path
-    UNFILTERED_PATH = '/home/jacob/Downloads/covidvaccine.csv'
-    # 'C:\\Users\\Jacob\\Downloads\\archive\\covidvaccine.csv'
-    FILTERED_PATH = 'C:\\Users\\Jacob\\Downloads\\archive\\filtered.csv'
+    import python_ta
 
-    ANALYZER = SentimentIntensityAnalyzer()
-
-    # if not os.path.isfile(FILTERED_PATH):
-    #     filter_and_save(UNFILTERED_PATH, FILTERED_PATH, ANALYZER)
-
-    tweets = from_csv(UNFILTERED_PATH, ANALYZER)
-
-    locations = {}
-
-    for item in tweets:
-        if item.location.code in locations:
-            t = locations[item.location.code]
-            polarity, num = t
-            polarity = polarity * num + item.polarity
-            num += 1
-            polarity /= num
-            locations[item.location.code] = (polarity, num)
-        else:
-            locations[item.location.code] = (item.polarity, 1)
-
-    for row in sorted([(l, locations[l])
-                       for l in locations], key=lambda a: a[1][0], reverse=True):
-        print(f'{states.code_lookup(row[0]).name}: {row[1][0]}')
+    python_ta.check_all(config={
+        'extra-imports': ['concurrent.futures',
+                          'csv',
+                          'datetime',
+                          'nltk.sentiment',
+                          'app',
+                          'locations',
+                          'states'],
+        'allowed-io': ['from_csv'],
+        'max-line-length': 100,
+        'disable': ['R1705', 'C0200']
+    })

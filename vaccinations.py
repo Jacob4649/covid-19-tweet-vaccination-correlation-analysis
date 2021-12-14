@@ -79,8 +79,12 @@ def from_csv(filename: str, app: App) -> Iterable[VaccinationRate]:
 
 
 if __name__ == '__main__':
-    VACCINATION_PATH = 'C:\\Users\\Jacob\\Downloads\\archive\\vaccination_data.csv'
+    import python_ta
 
-    rates = from_csv(VACCINATION_PATH)
-    for d in rates:
-        print(f'{d.location.code}, {d.time_stamp.isoformat()}, {d.daily}')
+    python_ta.check_all(config={
+        'extra-imports': [],
+        'allowed-io': [],
+        'max-line-length': 100,
+        'disable': ['R1705', 'C0200']
+    })
+    
