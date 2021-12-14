@@ -14,7 +14,7 @@ This file is Copyright (c) 2021 Jacob Klimczak, Ryan Merheby and Sean Ryan.
 from __future__ import annotations
 from concurrent.futures import ThreadPoolExecutor
 import csv
-from datetime import datetime
+import datetime
 from typing import Iterable, List, Optional
 from app import App
 from locations import Location
@@ -41,7 +41,7 @@ class Tweet:
     user: str
     followers: int
     tweet: str
-    time_stamp: datetime
+    time_stamp: datetime.datetime
     location: Location
     raw_location: str
     polarity: float
@@ -111,26 +111,26 @@ def _filter_row(row: List[str], app: App) -> bool:
         and app.location_lookup(row[1]) is not None
 
 
-def _from_csv_date(date: str) -> Optional[datetime]:
+def _from_csv_date(date: str) -> Optional[datetime.datetime]:
     """Return a date from the csv converted to a datetime,
     or None if date cannot be converted.
 
     Necessary because dates in the csv are stored in multiple
     formats"""
     try:
-        return datetime.strptime(date, '%Y-%m-%d %H:%M')
+        return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M')
     except ValueError:
         pass
     try:
-        return datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+        return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
     except ValueError:
         pass
     try:
-        return datetime.strptime(date, '%d-%m-%Y %H:%M')
+        return datetime.datetime.strptime(date, '%d-%m-%Y %H:%M')
     except ValueError:
         pass
     try:
-        return datetime.strptime(date, '%d-%m-%Y %H:%M:%S')
+        return datetime.datetime.strptime(date, '%d-%m-%Y %H:%M:%S')
     except ValueError:
         pass
     return None

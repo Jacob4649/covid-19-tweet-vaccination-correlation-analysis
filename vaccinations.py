@@ -44,7 +44,7 @@ class VaccinationRate:
         Preconditions:
             - len(row) == 14"""
         self.location = app.location_lookup(row[1])
-        self.time_stamp = datetime.strptime(row[0], '%Y-%m-%d').date()
+        self.time_stamp = datetime.datetime.strptime(row[0], '%Y-%m-%d').date()
         self.total = float(row[2])
         self.daily = float(row[11])
 
