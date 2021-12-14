@@ -3,3 +3,9 @@ __pycache__
 
 # IGNORE WORKSPACE SETTINGS
 .vscode
+
+# IGNORE OUTPUT
+output.html
+
+# IGNORE CSV
+.csv
