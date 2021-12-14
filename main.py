@@ -1,3 +1,15 @@
+"""
+Main
+
+Module Description
+==================
+Entry point for the application
+
+Copyright and Usage Information
+===============================
+
+This file is Copyright (c) 2021 Jacob Klimczak, Ryan Merheby and Sean Ryan.
+"""
 from datetime import date, timedelta
 from typing import Dict, List, Tuple
 from app import App
