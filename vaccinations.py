@@ -17,7 +17,7 @@ import states
 from locations import Location
 from concurrent import futures
 from concurrent.futures import ThreadPoolExecutor
-from datetime import date, datetime
+import datetime
 from typing import Iterable, List
 
 
@@ -33,7 +33,7 @@ class VaccinationRate:
 
     """
     location: Location
-    time_stamp: date
+    time_stamp: datetime.date
     total: float
     daily: float
 
@@ -100,4 +100,3 @@ if __name__ == '__main__':
         'max-line-length': 100,
         'disable': ['R1705', 'C0200']
     })
-    
