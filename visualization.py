@@ -37,7 +37,8 @@ def vaccination_twitter_plot(twitter: List[float],
     if regression_twitter is None and regression_vaccine is None:
         regression = _calculate_regression(twitter, vaccine)
     else:
-        regression = _calculate_regression(regression_twitter, regression_vaccine)
+        regression = _calculate_regression(
+            regression_twitter, regression_vaccine)
 
     # calculate residuals (technically absolute value of residuals)
 
@@ -180,7 +181,10 @@ def _write_output(output_value: str, path: str) -> None:
 
 
 def text_block(text: str) -> str:
-    """Return a string text block to add to an html file with the specified text"""
+    """Return a string text block to add to an html file with the specified text
+
+    >>> text_block('hi')
+    '<div style="text-align:center">hi</div>'"""
     return '<div style="text-align:center">' + text + '</div>'
 
 
