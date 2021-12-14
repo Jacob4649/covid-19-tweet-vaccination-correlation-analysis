@@ -106,7 +106,17 @@ def _filter_row(row: List[str], app: App) -> bool:
         - Has correct number of columns
         - Follower information is intact
         - Contains a valid date
-        - Location contains a US state code or US state name"""
+        - Location contains a US state code or US state name
+
+    >>> app = App()
+    >>> row = ['this is a row', '']
+    >>> _filter_row(row, app)
+    False
+
+    >>> row = ['', 'NY', '', '', '4', '', '', '', '2021-08-12 04:20', 'tweet body', '', '', '']
+    >>> _filter_row(row, app)
+    True
+    """
     return len(row) == 13 and row[4] != '' and _from_csv_date(row[8]) is not None \
         and app.location_lookup(row[1]) is not None
 
@@ -116,7 +126,14 @@ def _from_csv_date(date: str) -> Optional[datetime.datetime]:
     or None if date cannot be converted.
 
     Necessary because dates in the csv are stored in multiple
-    formats"""
+    formats
+
+    >>> _from_csv_date('2021-08-12') is None
+    True
+
+    >>> _from_csv_date('2021-08-12 05:40') is None
+    False
+    """
     try:
         return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M')
     except ValueError:
@@ -154,3 +171,7 @@ if __name__ == '__main__':
         'max-line-length': 100,
         'disable': ['R1705', 'C0200']
     })
+
+    import doctest
+
+    doctest.testmod()

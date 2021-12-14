@@ -86,10 +86,10 @@ class App:
         Return None if no matching location can be found
 
         >>> app = App()
-        >>> new_york = app.location_lookup("new york")
+        >>> new_york = app.location_lookup('new york')
         >>> new_york.name
         'New York'
-        >>> app.location_lookup("Lebanon") is None
+        >>> app.location_lookup('Lebanon') is None
         True"""
         # Exhaust state names, then related terms, before
         # finally checking for state codes
@@ -113,9 +113,9 @@ def _contains_word(string: str, word: str) -> bool:
     """Return whether an input string contains a case matched version
     of the specified word
 
-    >>> _contains_word("Washington is great", "Washington")
+    >>> _contains_word('Washington is great', 'Washington')
     True
-    >>> _contains_word("Georgia is great", "georg")
+    >>> _contains_word('Georgia is great', 'georg')
     False
     """
     return string == word or ' ' + word + ' ' in string or \
@@ -132,9 +132,9 @@ def _unpack_json_into_locations(filename: str) -> list[Location]:
     with open(filename, 'r', encoding='utf-8') as f:
         json_data = json.load(f)
         for state_data in json_data:
-            code = state_data["code"]
-            name = state_data["name"]
-            related_terms = state_data["related_terms"]
+            code = state_data['code']
+            name = state_data['name']
+            related_terms = state_data['related_terms']
             state = Location(code, name, related_terms)
             states_so_far.append(state)
 
