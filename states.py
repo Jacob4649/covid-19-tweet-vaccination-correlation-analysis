@@ -18,12 +18,7 @@ from locations import Location
 def unpack_json_into_locations(filename: str) -> list[Location]:
     """Serialize the attributes of location objects into a JSON file.
     Preconditions:
-    - filename is a valid file
-    - filename[-4:] == 'json'
-    - with open(filename, 'r') as f:
-        json_data = json.load(f)
-        type(json_data) == list
-        all(type(json_object) == dict for json_object in json_data)"""
+    - filename is a valid json file, and all children are location objects"""
 
     states_so_far = []
     try:
