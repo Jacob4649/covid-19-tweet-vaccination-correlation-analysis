@@ -4,6 +4,8 @@ from typing import List
 import plotly.graph_objects as go
 from sklearn.linear_model import LinearRegression
 import numpy as np
+from pandas import DataFrame
+import plotly.express as px
 
 
 def vaccination_twitter_plot(twitter: List[float], vaccine: List[int], title: str) -> go.Figure:
@@ -63,6 +65,24 @@ def vaccination_twitter_plot(twitter: List[float], vaccine: List[int], title: st
         yaxis_title='Daily Mean Vaccination Rate',
         legend_title='Legend'
     )
+
+    return fig
+
+
+def cloropleth(correlations):
+    array = [[key, correlations[key]] for key in correlations]
+
+    dataframe = DataFrame(array, columns=['Code', 'Correlation'])
+
+    fig = px.choropleth(dataframe,
+                        locations='Code',
+                        color='Correlation',
+                        color_continuous_scale='spectral_r',
+                        hover_name='Code',
+                        locationmode='USA-states',
+                        labels={
+                            'Correlation': 'Correlation'},
+                        scope='usa')
 
     return fig
 

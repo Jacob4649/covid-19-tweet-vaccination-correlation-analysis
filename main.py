@@ -71,7 +71,7 @@ if __name__ == '__main__':
 
     correlations = location_correlation(
         location_vaccines, location_tweets, start, end)
-
+    visualization.cloropleth(correlations).show()
     tweet_metric = generate_metrics(
         raw_tweets, lambda tweet: (tweet.time_stamp.date(), tweet.polarity))
     vaccine_metric = generate_metrics(
