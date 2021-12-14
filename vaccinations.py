@@ -95,8 +95,6 @@ if __name__ == '__main__':
     python_ta.check_all(config={
         'extra-imports': ['csv',
                           'app',
-                          'states',
-                          'concurrent',
                           'concurrent.futures',
                           'datetime',
                           'locations'],
