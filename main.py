@@ -6,6 +6,7 @@ from sklearn.linear_model._glm.glm import _y_pred_deviance_derivative
 from app import App
 import vaccinations
 import tweets
+import visualization
 from data_processing import DailyMetricCollection, average_metrics, generate_metrics, location_dict
 
 
@@ -41,46 +42,7 @@ if __name__ == '__main__':
 
     diff = (end - start).days + 1
 
-    import plotly.express as px
-    import plotly.graph_objects as go
-    fig = px.scatter(x=tweet_list, y=vaccine_list,
-                     title='Vaccination Rate As Related To Ongoing Twitter Discourse',
-                     labels=dict(x="Mean VADER Score", y="Vaccination Rate"))
-
-    # calculate regression
-
-    x_array = np.array(tweet_list).reshape(-1, 1)
-    y_array = np.array(vaccine_list).reshape(-1, 1)
-
-    regression = LinearRegression().fit(x_array, y_array)
-
-    # calculate residuals (technically absolute value of residuals)
-
-    predictions = [prediction[0] for prediction in
-                   regression.predict(
-        np.array(tweet_list).reshape(-1, 1))]
-
-    residuals = [abs(predictions[i] - vaccine_list[i])
-                 for i in range(len(predictions))]
-
-    # plot line of best fit
-
-    base_x = min(tweet_list)
-    end_x = max(tweet_list)
-
-    base_y = regression.predict(np.array(base_x).reshape(-1, 1))[0][0]
-    end_y = regression.predict(np.array(end_x).reshape(-1, 1))[0][0]
-
-    fig.add_shape(type='line', x0=base_x, y0=base_y, x1=end_x, y1=end_y)
-
-    # plot residuals
-
-    fig.add_trace(go.Scatter(
-        x=tweet_list,
-        y=residuals,
-        name="Absolute Value Of Residuals"
-    ))
-
-    fig.update_traces(mode='markers', selector=dict(type='scatter'))
+    fig = visualization.vaccination_twitter_plot(
+        tweet_list, vaccine_list, 'Vaccination Rate As Related To Ongoing Twitter Discourse')
 
     fig.show()
