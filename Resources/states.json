@@ -1,0 +1,262 @@
+[
+  {
+    "code": "AK",
+    "name": "Alaska",
+    "related_terms": []
+  },
+  {
+    "code": "AL",
+    "name": "Alabama",
+    "related_terms": []
+  },
+  {
+    "code": "AR",
+    "name": "Arkansas",
+    "related_terms": []
+  },
+  {
+    "code": "AZ",
+    "name": "Arizona",
+    "related_terms": []
+  },
+  {
+    "code": "CA",
+    "name": "California",
+    "related_terms": []
+  },
+  {
+    "code": "CO",
+    "name": "Colorado",
+    "related_terms": []
+  },
+  {
+    "code": "CT",
+    "name": "Connecticut",
+    "related_terms": []
+  },
+  {
+    "code": "DC",
+    "name": "District of Columbia",
+    "related_terms": ["Washington DC"]
+  },
+  {
+    "code": "DE",
+    "name": "Delaware",
+    "related_terms": []
+  },
+  {
+    "code": "FL",
+    "name": "Florida",
+    "related_terms": []
+  },
+  {
+    "code": "GA",
+    "name": "Georgia",
+    "related_terms": []
+  },
+  {
+    "code": "HI",
+    "name": "Hawaii",
+    "related_terms": []
+  },
+  {
+    "code": "IA",
+    "name": "Iowa",
+    "related_terms": []
+  },
+  {
+    "code": "ID",
+    "name": "Idaho",
+    "related_terms": []
+  },
+  {
+    "code": "IL",
+    "name": "Illinois",
+    "related_terms": []
+  },
+  {
+    "code": "IN",
+    "name": "Indiana",
+    "related_terms": []
+  },
+  {
+    "code": "KS",
+    "name": "Kansas",
+    "related_terms": []
+  },
+  {
+    "code": "KY",
+    "name": "Kentucky",
+    "related_terms": []
+  },
+  {
+    "code": "LA",
+    "name": "Louisiana",
+    "related_terms": []
+  },
+  {
+    "code": "MA",
+    "name": "Massachusetts",
+    "related_terms": []
+  },
+  {
+    "code": "MD",
+    "name": "Maryland",
+    "related_terms": []
+  },
+  {
+    "code": "ME",
+    "name": "Maine",
+    "related_terms": []
+  },
+  {
+    "code": "MI",
+    "name": "Michigan",
+    "related_terms": []
+  },
+  {
+    "code": "MN",
+    "name": "Minnesota",
+    "related_terms": []
+  },
+  {
+    "code": "MO",
+    "name": "Missouri",
+    "related_terms": []
+  },
+  {
+    "code": "MS",
+    "name": "Mississippi",
+    "related_terms": []
+  },
+  {
+    "code": "MT",
+    "name": "Montana",
+    "related_terms": []
+  },
+  {
+    "code": "NC",
+    "name": "North Carolina",
+    "related_terms": []
+  },
+  {
+    "code": "ND",
+    "name": "North Dakota",
+    "related_terms": []
+  },
+  {
+    "code": "NE",
+    "name": "Nebraska",
+    "related_terms": []
+  },
+  {
+    "code": "NH",
+    "name": "New Hampshire",
+    "related_terms": []
+  },
+  {
+    "code": "NJ",
+    "name": "New Jersey",
+    "related_terms": []
+  },
+  {
+    "code": "NM",
+    "name": "New Mexico",
+    "related_terms": []
+  },
+  {
+    "code": "NV",
+    "name": "Nevada",
+    "related_terms": []
+  },
+  {
+    "code": "NY",
+    "name": "New York",
+    "related_terms": ["New York State"]
+  },
+  {
+    "code": "OH",
+    "name": "Ohio",
+    "related_terms": []
+  },
+  {
+    "code": "OK",
+    "name": "Oklahoma",
+    "related_terms": []
+  },
+  {
+    "code": "OR",
+    "name": "Oregon",
+    "related_terms": []
+  },
+  {
+    "code": "PA",
+    "name": "Pennsylvania",
+    "related_terms": []
+  },
+  {
+    "code": "PR",
+    "name": "Puerto Rico",
+    "related_terms": []
+  },
+  {
+    "code": "RI",
+    "name": "Rhode Island",
+    "related_terms": []
+  },
+  {
+    "code": "SC",
+    "name": "South Carolina",
+    "related_terms": []
+  },
+  {
+    "code": "SD",
+    "name": "South Dakota",
+    "related_terms": []
+  },
+  {
+    "code": "TN",
+    "name": "Tennessee",
+    "related_terms": []
+  },
+  {
+    "code": "TX",
+    "name": "Texas",
+    "related_terms": []
+  },
+  {
+    "code": "UT",
+    "name": "Utah",
+    "related_terms": []
+  },
+  {
+    "code": "VA",
+    "name": "Virginia",
+    "related_terms": []
+  },
+  {
+    "code": "VT",
+    "name": "Vermont",
+    "related_terms": []
+  },
+  {
+    "code": "WA",
+    "name": "Washington",
+    "related_terms": []
+  },
+  {
+    "code": "WI",
+    "name": "Wisconsin",
+    "related_terms": []
+  },
+  {
+    "code": "WV",
+    "name": "West Virginia",
+    "related_terms": []
+  },
+  {
+    "code": "WY",
+    "name": "Wyoming",
+    "related_terms": []
+  }
+]
