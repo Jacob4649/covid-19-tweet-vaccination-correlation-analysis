@@ -7,6 +7,8 @@ from datetime import date, timedelta
 from typing import Any, Callable, Dict, Iterable, List, Tuple, Union
 from locations import Location
 from sklearn.linear_model import LinearRegression
+from tweets import Tweet
+from vaccinations import VaccinationRate
 
 
 class DailyMetric:
@@ -348,3 +350,33 @@ def location_dict(data: Iterable, location_get: Callable[[Any], Location]) -> Di
         else:
             locations[location.code] = [item]
     return locations
+
+
+def location_stats(vaccine_dict: Dict[str, List[VaccinationRate]], tweet_dict: Dict[str, List[Tweet]], code: str, start: date, end: date) -> Tuple[List[float], List[int]]:
+    """Return a tuple with daily mean vader scores, and daily mean vaccinations
+    for the specified state between the start and end dates
+
+    Preconditions:
+        - len(code) == 2
+        - code is a valid state code"""
+    tweets = tweet_dict[code]
+    vaccines = vaccine_dict[code]
+
+    tweet_metric = generate_metrics(
+        tweets, lambda tweet: (tweet.time_stamp.date(), tweet.polarity))
+    vaccine_metric = generate_metrics(
+        vaccines, lambda vaccine: (vaccine.time_stamp, vaccine.daily))
+
+    average_tweet_polarity = average_metrics(tweet_metric)
+    average_vaccine_rate = average_metrics(vaccine_metric)
+
+    tweet_collection = DailyMetricCollection(average_tweet_polarity, False)
+    vaccine_collection = DailyMetricCollection(average_vaccine_rate, True)
+
+    tweet_range = tweet_collection.get(start, end)
+    vaccine_range = vaccine_collection.get(start, end)
+
+    tweet_list = list(tweet_range)
+    vaccine_list = list(vaccine_range)
+
+    return tweet_list, vaccine_list
