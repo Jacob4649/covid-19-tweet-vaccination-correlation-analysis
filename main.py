@@ -123,4 +123,33 @@ if __name__ == '__main__':
     figures.append(visualization.unwrap_figure(fig.to_html()))
     figures.append(visualization.unwrap_figure(chloropleth.to_html()))
 
+    figures.append(visualization.text_block(
+        'The above graph shows the correlations between vaccination rate and vaccine perception in Twitter discourse. ' +
+        'Darker states have stronger correlations, blue corresponds to negative correlations, and red corresponds to ' +
+        'positive correlations. A strong positive correlation means that the population\'s feelings about the vaccine ' +
+        'on Twitter reflect their rate of getting the vaccine. A strong negative correlation means the opposite. The ' +
+        'weakly correlated states are in between. Their feelings on Twitter do not seem to correspond to their rate ' +
+        'of getting the vaccine in any way.'))
+
+    # noteable states
+    figures.append(visualization.text_block(
+        '<div style="text-align: center; font-size: 24pt">NOTABLE STATES</div>'))
+
+    figures.append(visualization.text_block('Here are a few close up graphs of the notable states in ' +
+                                            'this analysis. The 3 most and 3 least correlated states ' +
+                                            'are shown. Also worth noting, is that no data is available ' +
+                                            'on West Virgina, as no Tweets were able to be filtered out for it.'))
+
+    # sort states by correlation
+    sort = sorted(correlations.keys(),
+                  key=lambda state: correlations[state], reverse=True)
+
+    # first most correlated
+    most = sort[0]
+    most_tweets, most_vaccine = location_stats(location_vaccines, location_tweets,
+                                               most, start, end)
+
+    visualization.vaccination_twitter_plot(
+        most_tweets, most_vaccine, 'Vaccination Information For Most Correlated State')
+
     visualization.output(figures, app.output_path, app.template_path)
