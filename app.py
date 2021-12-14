@@ -1,10 +1,9 @@
 """Contains manager class with app state"""
 
+from typing import List, Optional
 from nltk.sentiment import SentimentIntensityAnalyzer
 from locations import Location
-from typing import List, Optional
 import states
-from data_processing import generate_metrics, average_metrics, location_dict
 import os
 
 
@@ -19,6 +18,7 @@ class App:
         - vaccine path: path to vaccine dataset
         - template_path: path to find output template
         - output_path: path to write output to
+        - states_path: path to the states json
         """
 
     locations: List[Location]
@@ -27,8 +27,9 @@ class App:
     vaccine_path: str
     template_path: str
     output_path: str
+    states_path: str
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize app object"""
         self.tweet_path = _get_dataset('twitter.csv')
         self.vaccine_path = _get_dataset('vaccine.csv')
@@ -92,6 +93,7 @@ class App:
         for state in self.locations:
             if _contains_word(location, state.code):
                 return state
+        return None
 
 
 def _contains_word(string: str, word: str) -> bool:
@@ -131,10 +133,14 @@ if __name__ == '__main__':
     import python_ta
 
     python_ta.check_all(config={
-        'extra-imports': ['python_ta.contracts', 'math'],
+        'extra-imports': ['nltk.sentiment',
+                          'locations',
+                          'states',
+                          'data_processing'],  # the names (strs) of imported modules
+        # the names (strs) of functions that call print/open/input
+        'allowed-io': [],
         'max-line-length': 100,
         'disable': ['R1705', 'C0200']
     })
-
     import doctest
     doctest.testmod()
