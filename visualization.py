@@ -134,7 +134,7 @@ def _write_output(output: str, path: str) -> None:
 
 def text_block(text: str) -> str:
     """Return a string text block to add to an html file with the specified text"""
-    return '<div>' + text + '</div>'
+    return '<div style="text-align:center">' + text + '</div>'
 
 
 def output(blocks: List[str], path: str, template_path: str) -> None:
