@@ -8,6 +8,7 @@ numpy
 pandas
 sklearn
 nltk
+scipy
 
 # Graphics and data visualization
 plotly
