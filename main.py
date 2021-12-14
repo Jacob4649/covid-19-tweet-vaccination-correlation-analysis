@@ -42,8 +42,10 @@ def location_stats(vaccine_dict: Dict[str, List[VaccinationRate]],
     average_polarity_of_tweets = average_metrics(tweets_metrics)
     average_rate_of_vaccines = average_metrics(vaccines_metrics)
 
-    tweet_data_collection = DailyMetricCollection(average_polarity_of_tweets, False)
-    vaccine_data_collection = DailyMetricCollection(average_rate_of_vaccines, True)
+    tweet_data_collection = DailyMetricCollection(
+        average_polarity_of_tweets, False)
+    vaccine_data_collection = DailyMetricCollection(
+        average_rate_of_vaccines, True)
 
     range_of_tweets = tweet_data_collection.get(start_date, end_date)
     range_of_vaccines = vaccine_data_collection.get(start_date, end_date)
@@ -74,7 +76,7 @@ if __name__ == '__main__':
     try:
         # disabling ssl checking
         # downloading vader lexicon may not work on some machines without disabling this
-        _create_unverified_https_context = _ssl.create_unverified_context
+        _create_unverified_https_context = ssl._create_unverified_context
     except AttributeError:
         pass
     else:
