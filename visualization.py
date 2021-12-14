@@ -21,14 +21,14 @@ def vaccination_twitter_plot(twitter: List[float],
     calculate line of best fit with different data from plot data
 
     Preconditions:
-        - len(twitter) == len(vaccine)"""
+        - len(twitter) == len(vaccine)
+        - regression_twitter is None == regression_vaccine is None"""
     # calculate regression
-
-    if regression_twitter is None:
-        regression_twitter = twitter
-    if regression_vaccine is None:
-        regression_vaccine = vaccine
-    regression = _calculate_regression(regression_twitter, regression_vaccine)
+    t, v = regression_twitter, regression_vaccine
+    if regression_twitter is None and regression_vaccine is None:
+        t = twitter
+        v = vaccine
+    regression = _calculate_regression(t, v)
 
     # calculate residuals (technically absolute value of residuals)
 
@@ -71,6 +71,25 @@ def vaccination_twitter_plot(twitter: List[float],
         name='Best Fit',
         mode='lines'
     ))
+
+    # show data used to perform regression if it is different from graph data
+
+    if regression_vaccine is not None \
+            and regression_twitter is not None:
+
+        fig.add_trace(go.Scatter(
+            x=twitter,
+            y=vaccine,
+            name='Vaccine Rates For Model Data',
+            mode='markers'
+        ))
+
+        fig.add_trace(go.Scatter(
+            x=twitter,
+            y=residuals,
+            name='Absolute Value Of Residuals For Model Data',
+            mode='markers'
+        ))
 
     fig.update_layout(
         title=title,
