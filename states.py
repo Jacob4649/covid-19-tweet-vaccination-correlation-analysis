@@ -1,6 +1,14 @@
 """
-Functions and global constant state
-(as in geographical US state) information
+States
+
+Module Description
+==================
+Contains functions that unpack state information into location objects and
+search for attributes in those objects.
+
+Copyright and Usage Information
+===============================
+This file is Copyright (c) 2021 Jacob Klimczak, Ryan Merheby and Sean Ryan.
 """
 
 import json

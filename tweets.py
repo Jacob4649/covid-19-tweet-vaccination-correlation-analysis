@@ -1,6 +1,14 @@
 """
+Tweets
+
+Module Description
+==================
 Represents and filters tweets about the COVID vaccines,
 and their rollout across the united states
+
+Copyright and Usage Information
+===============================
+This file is Copyright (c) 2021 Jacob Klimczak, Ryan Merheby and Sean Ryan.
 """
 
 from __future__ import annotations

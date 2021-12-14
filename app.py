@@ -1,4 +1,14 @@
-"""Contains manager class with app state"""
+"""
+App
+
+Module Description
+==================
+Contains manager class that bundles locations, file paths, and sentiment analyzer.
+
+Copyright and Usage Information
+===============================
+This file is Copyright (c) 2021 Jacob Klimczak, Ryan Merheby and Sean Ryan.
+"""
 
 from typing import List, Optional
 import os

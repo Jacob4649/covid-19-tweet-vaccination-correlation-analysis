@@ -1,7 +1,16 @@
 """
-This file defines the dataclass VacRate and helps with orgainzing the data
+Vaccinations
 
+Module Description
+==================
+Bundles data about vaccination rates into a dataclass and contains functions that 
+help organize that data
+
+Copyright and Usage Information
+===============================
+This file is Copyright (c) 2021 Jacob Klimczak, Ryan Merheby and Sean Ryan.
 """
+
 import csv
 from app import App
 import states

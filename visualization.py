@@ -1,4 +1,14 @@
-"""Module for displaying information in graphs and figures"""
+"""
+Visualizations
+
+Module Description
+==================
+Displays our desired data in graphs and figures
+
+Copyright and Usage Information
+===============================
+This file is Copyright (c) 2021 Jacob Klimczak, Ryan Merheby and Sean Ryan.
+"""
 
 from typing import Dict, List
 import webbrowser

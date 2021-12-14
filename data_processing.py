@@ -1,5 +1,13 @@
 """
-Module for generating statistic values by date.
+Data Processing
+
+Module Description
+==================
+Generates statistic values by date.
+
+Copyright and Usage Information
+===============================
+This file is Copyright (c) 2021 Jacob Klimczak, Ryan Merheby and Sean Ryan.
 """
 
 from datetime import date, timedelta

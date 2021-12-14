@@ -1,4 +1,14 @@
-"""Handles recognized locations"""
+"""
+Locations
+
+Module Description
+==================
+Defines Location data type
+
+Copyright and Usage Information
+===============================
+This file is Copyright (c) 2021 Jacob Klimczak, Ryan Merheby and Sean Ryan.
+"""
 
 
 from dataclasses import dataclass
