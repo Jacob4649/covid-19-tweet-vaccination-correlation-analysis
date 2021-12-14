@@ -60,14 +60,15 @@ def location_correlation(vaccine_dict: Dict[str, List[VaccinationRate]],
 
 if __name__ == '__main__':
     # downlad vader lexicon
-        try:
-            _create_unverified_https_context = ssl._create_unverified_context
-        except AttributeError:
-            pass
-        else:
-            ssl._create_default_https_context = _create_unverified_https_context
+    try:
+        # disable ssl (necessary to download vader lexicon)
+        _create_unverified_https_context = ssl._create_unverified_context
+    except AttributeError:
+        pass
+    else:
+        ssl._create_default_https_context = _create_unverified_https_context
 
-        nltk.download('vader_lexicon')
+    nltk.download('vader_lexicon')
 
     # launch app
     app = App()
