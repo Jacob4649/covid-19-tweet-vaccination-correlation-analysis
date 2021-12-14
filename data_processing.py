@@ -40,7 +40,12 @@ class SingleDateMetric(DailyMetric):
 
     Attributes:
         - date: the date for this metric
-        - value: the value for this metric"""
+        - value: the value for this metric
+
+    >>> d = datetime.date(2021, 10, 10)
+    >>> m = SingleDateMetric(d, 1.0)
+    >>> m.get(d)
+    1.0"""
 
     value: Union[float, int]
     date: datetime.date
@@ -171,8 +176,8 @@ class DailyMetricCollection:
         index to use when extrapolating
 
     Representation Invariants:
-        - self.extrapolation_range > 1
-        - self.interpolation_range > 1
+        - self.extrapolation_range >= 1
+        - self.interpolation_range >= 1
         - len(self._metrics) > self.interpolation_range
         - len(self._metrics) > self.extrapolation_range
     """
@@ -389,6 +394,7 @@ if __name__ == '__main__':
         'max-line-length': 100,
         'disable': ['R1705', 'C0200']
     })
+
     import doctest
 
     doctest.testmod()
