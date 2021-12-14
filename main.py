@@ -121,6 +121,16 @@ if __name__ == '__main__':
     # setup output file
     figures = []
     figures.append(visualization.unwrap_figure(fig.to_html()))
+
+    figures.append(visualization.text_block(
+        'The graph above shows the average vaccination rate in the US on a given day ' +
+        'as a function of the average sentiment of Twitter discourse on the same day. ' +
+        'From this graph we can see that days with higher intensity sentiments (' +
+        'reflecting more positive views towards the vaccine) tend to correspond to ' +
+        'higher vaccination rates. The reverse is also true. The linear model we produced ' +
+        'is shown as a line on the graph. The absolute values of its residuals are shown ' +
+        'towards the bottom.'))
+
     figures.append(visualization.unwrap_figure(chloropleth.to_html()))
 
     figures.append(visualization.text_block(
@@ -133,7 +143,7 @@ if __name__ == '__main__':
 
     # noteable states
     figures.append(visualization.text_block(
-        '<div style="text-align: center; font-size: 24pt">NOTABLE STATES</div>'))
+        '<div style="text-align: center; font-size: 24pt; padding: 24pt">NOTABLE STATES</div>'))
 
     figures.append(visualization.text_block('Here are a few close up graphs of the notable states in ' +
                                             'this analysis. The 3 most and 3 least correlated states ' +
@@ -149,7 +159,9 @@ if __name__ == '__main__':
     most_tweets, most_vaccine = location_stats(location_vaccines, location_tweets,
                                                most, start, end)
 
-    visualization.vaccination_twitter_plot(
+    most_fig = visualization.vaccination_twitter_plot(
         most_tweets, most_vaccine, 'Vaccination Information For Most Correlated State')
+
+    figures.append(visualization.unwrap_figure(most_fig.to_html()))
 
     visualization.output(figures, app.output_path, app.template_path)
