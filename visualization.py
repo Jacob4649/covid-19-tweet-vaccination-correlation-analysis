@@ -104,3 +104,10 @@ def _calculate_regression(twitter: List[float], vaccine: List[int]) -> LinearReg
     y_array = np.array(vaccine).reshape(-1, 1)
 
     return LinearRegression().fit(x_array, y_array)
+
+
+def _read_template(path: str) -> str:
+    """Return the content of the html template file found
+    at the specified path"""
+    with open(path, encoding='utf-8') as template:
+        return '\n'.join(template.readlines())
