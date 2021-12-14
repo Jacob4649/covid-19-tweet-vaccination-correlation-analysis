@@ -222,3 +222,7 @@ if __name__ == '__main__':
         # we should group the plotly.graph_objects and plotly.express
         # imports
     })
+
+    import doctest
+
+    doctest.testmod()
