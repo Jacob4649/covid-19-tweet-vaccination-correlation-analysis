@@ -5,6 +5,7 @@ from locations import Location
 from typing import List, Optional
 import states
 from data_processing import generate_metrics, average_metrics, location_dict
+import os
 
 
 class App:
@@ -16,17 +17,24 @@ class App:
         - analyzer: the sentiment analyzer to use
         - tweet_path: path to tweet dataset
         - vaccine path: path to vaccine dataset
+        - template_path: path to find output template
+        - output_path: path to write output to
         """
 
     locations: List[Location]
     analyzer: SentimentIntensityAnalyzer
     tweet_path: str
     vaccine_path: str
+    template_path: str
+    output_path: str
 
     def __init__(self):
         """Initialize app object"""
         self.tweet_path = '/home/jacob/Downloads/covidvaccine.csv'
         self.vaccine_path = '/home/jacob/Downloads/us_state_vaccinations.csv'
+        self.template_path = _get_absolute_path(
+            f'Resources{os.path.sep}output-template.html')
+        self.output_path = _get_absolute_path('output.html')
         self.locations = states.STATES
         self.analyzer = SentimentIntensityAnalyzer()
 
@@ -81,6 +89,12 @@ def _contains_word(string: str, word: str) -> bool:
     return string == word or ' ' + word + ' ' in string or \
         (len(string) > len(word) and (string[0:len(word) + 1] == word + ' '
                                       or string[-len(word) - 1:] == ' ' + word))
+
+
+def _get_absolute_path(path: str) -> str:
+    """Return the absolute path of the specified relative path"""
+    return os.path.dirname(
+        os.path.realpath(__file__)) + os.path.sep + path
 
 
 if __name__ == '__main__':

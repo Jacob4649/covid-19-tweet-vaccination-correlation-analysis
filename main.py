@@ -63,20 +63,26 @@ if __name__ == '__main__':
 
     # launch app
     app = App()
+
+    # import from datasets
     raw_tweets = list(tweets.from_csv(app.tweet_path, app))
     raw_vaccinations = list(vaccinations.from_csv(app.vaccine_path, app))
 
+    # choose start and end dates
     start = date(2021, 2, 28)
     end = date(2021, 11, 1)
 
+    # split data by state
     location_tweets = location_dict(raw_tweets,
                                     lambda tweet: tweet.location)
     location_vaccines = location_dict(raw_vaccinations,
                                       lambda rate: rate.location)
 
+    # calculate correlation for each state
     correlations = location_correlation(
         location_vaccines, location_tweets, start, end)
 
+    # fill in incomplete data by interpolating between existing datapoints
     tweet_metric = generate_metrics(
         raw_tweets, lambda tweet: (tweet.time_stamp.date(), tweet.polarity))
     vaccine_metric = generate_metrics(
@@ -88,19 +94,24 @@ if __name__ == '__main__':
     tweet_collection = DailyMetricCollection(average_tweet_polarity, False)
     vaccine_collection = DailyMetricCollection(average_vaccine_rate, True)
 
+    # get interpolated data between start and end dates
     tweet_range = tweet_collection.get(start, end)
     vaccine_range = vaccine_collection.get(start, end)
 
     tweet_list = list(tweet_range)
     vaccine_list = list(vaccine_range)
 
+    # visualize data
     fig = visualization.vaccination_twitter_plot(
         tweet_list, vaccine_list, 'Vaccination Rate As Related To Ongoing Twitter Discourse')
-
-    fig.show()
 
     chloropleth = visualization.chloropleth(
         correlations, 'Correlation Between Twitter Discourse And Vaccination Rate',
         'Correlation', app)
 
-    chloropleth.show()
+    # setup output file
+    figures = []
+    figures.append(visualization.unwrap_figure(fig.to_html()))
+    figures.append(visualization.unwrap_figure(chloropleth.to_html()))
+
+    visualization.output(figures, app.output_path, app.template_path)

@@ -7,6 +7,7 @@ import numpy as np
 from pandas import DataFrame
 import plotly.express as px
 from app import App
+import webbrowser
 
 
 def vaccination_twitter_plot(twitter: List[float], vaccine: List[int], title: str) -> go.Figure:
@@ -119,6 +120,29 @@ def _insert_into_template(insert: str, path: str) -> str:
     return _read_template(path).replace('{INSERT FIGURES HERE}', insert)
 
 
-def _unwrap_figure_html(figure: str) -> str:
+def unwrap_figure(figure: str) -> str:
     """Return the html representation of a figure, without its enclosing body tags"""
     return figure.replace('<body>', '').replace('</body>', '')
+
+
+def _write_output(output: str, path: str) -> None:
+    """Write the specified html to the specified path
+    """
+    with open(path, 'w', encoding='utf-8') as file:
+        file.write(output)
+
+
+def text_block(text: str) -> str:
+    """Return a string text block to add to an html file with the specified text"""
+    return '<div>' + text + '</div>'
+
+
+def output(blocks: List[str], path: str, template_path: str) -> None:
+    """Writes an html output file to the speicified path, 
+    using the template from the specified template
+    path. Inserts the specified blocks of text and
+    figures represented by strings. Then opens the file."""
+    internals = ''.join(blocks)
+    body = _insert_into_template(internals, template_path)
+    _write_output(body, path)
+    webbrowser.open_new(f'file://{path}')
