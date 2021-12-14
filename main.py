@@ -7,6 +7,7 @@ import visualization
 from data_processing import DailyMetricCollection, average_metrics, generate_metrics, location_dict, calculate_correlation
 from tweets import Tweet
 from vaccinations import VaccinationRate
+import nltk
 
 
 def location_stats(vaccine_dict: Dict[str, List[VaccinationRate]],
@@ -57,6 +58,10 @@ def location_correlation(vaccine_dict: Dict[str, List[VaccinationRate]],
 
 
 if __name__ == '__main__':
+    # downlad vader lexicon
+    nltk.download('vader_lexicon')
+
+    # launch app
     app = App()
     raw_tweets = list(tweets.from_csv(app.tweet_path, app))
     raw_vaccinations = list(vaccinations.from_csv(app.vaccine_path, app))
@@ -71,7 +76,7 @@ if __name__ == '__main__':
 
     correlations = location_correlation(
         location_vaccines, location_tweets, start, end)
-    visualization.cloropleth(correlations).show()
+
     tweet_metric = generate_metrics(
         raw_tweets, lambda tweet: (tweet.time_stamp.date(), tweet.polarity))
     vaccine_metric = generate_metrics(
@@ -93,3 +98,9 @@ if __name__ == '__main__':
         tweet_list, vaccine_list, 'Vaccination Rate As Related To Ongoing Twitter Discourse')
 
     fig.show()
+
+    chloropleth = visualization.chloropleth(
+        correlations, 'Correlation Between Twitter Discourse And Vaccination Rate',
+        'Correlation', app)
+
+    chloropleth.show()

@@ -1,11 +1,12 @@
 """Module for displaying information in graphs and figures"""
 
-from typing import List
+from typing import Dict, List
 import plotly.graph_objects as go
 from sklearn.linear_model import LinearRegression
 import numpy as np
 from pandas import DataFrame
 import plotly.express as px
+from app import App
 
 
 def vaccination_twitter_plot(twitter: List[float], vaccine: List[int], title: str) -> go.Figure:
@@ -69,19 +70,27 @@ def vaccination_twitter_plot(twitter: List[float], vaccine: List[int], title: st
     return fig
 
 
-def cloropleth(correlations):
-    array = [[key, correlations[key]] for key in correlations]
+def chloropleth(values: Dict[str, float], title: str, value_name: str, app: App):
+    """Return a cloropleth figure with the specified title, and value name
+    showing some value for each state using a dictionary
+    of state codes mapped to values. Takes the name of each state from app state bundle
 
-    dataframe = DataFrame(array, columns=['Code', 'Correlation'])
+    Preconditions:
+        - every state code in values is in the app state's locations attribute"""
+    array = [[key, values[key], app.location_code_lookup(
+        key).name] for key in values]
+
+    dataframe = DataFrame(array, columns=['Code', 'Value', 'State Name'])
 
     fig = px.choropleth(dataframe,
+                        title=title,
                         locations='Code',
-                        color='Correlation',
+                        color='Value',
                         color_continuous_scale='spectral_r',
-                        hover_name='Code',
+                        hover_name='State Name',
                         locationmode='USA-states',
                         labels={
-                            'Correlation': 'Correlation'},
+                            'Value': value_name},
                         scope='usa')
 
     return fig
