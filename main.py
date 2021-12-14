@@ -185,7 +185,8 @@ if __name__ == '__main__':
         'Here we will examine how well a linear model could have predicted vaccination ' +
         'rates based on Twitter data at an arbitrary moment in time. The graph below has ' +
         'the same data as the first graph in this report, but this time, the line of best ' +
-        'fit was calculated using only datapoints from the first half of our date range.'))
+        'fit was calculated using only datapoints from the first half of our date range. ' +
+        'The data used to create this model is also displayed on the graph below.'))
 
     # filter for data only from first half
     half_tweet_range = tweet_collection.get(start, half)
