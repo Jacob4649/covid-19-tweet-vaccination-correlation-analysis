@@ -154,14 +154,25 @@ if __name__ == '__main__':
     sort = sorted(correlations.keys(),
                   key=lambda state: correlations[state], reverse=True)
 
-    # first most correlated
-    most = sort[0]
-    most_tweets, most_vaccine = location_stats(location_vaccines, location_tweets,
-                                               most, start, end)
+    def show_correlated_state(index: str, title: str) -> None:
+        """Add the state with the specified index in sort
+        to be shown in the output with the specified title information"""
+        most = sort[index]
+        most_tweets, most_vaccine = location_stats(location_vaccines, location_tweets,
+                                                   most, start, end)
 
-    most_fig = visualization.vaccination_twitter_plot(
-        most_tweets, most_vaccine, f'Vaccination Information For {app.location_code_lookup(most).name}')
+        most_fig = visualization.vaccination_twitter_plot(
+            most_tweets, most_vaccine, f'Vaccination Information For The {title} ' +
+            f'({app.location_code_lookup(most).name})')
 
-    figures.append(visualization.unwrap_figure(most_fig.to_html()))
+        figures.append(visualization.unwrap_figure(most_fig.to_html()))
+
+    # show correlated states
+    show_correlated_state(0, 'Most Positively Correlated State')
+    show_correlated_state(1, 'Second Most Positively Correlated State')
+    show_correlated_state(2, 'Third Most Positively Correlated State')
+    show_correlated_state(-3, 'Third Most Negatively Correlated State')
+    show_correlated_state(-2, 'Second Most Negatively Correlated State')
+    show_correlated_state(-1, 'Most Negatively Correlated State')
 
     visualization.output(figures, app.output_path, app.template_path)
