@@ -77,16 +77,25 @@ def vaccination_twitter_plot(twitter: List[float],
     if regression_vaccine is not None \
             and regression_twitter is not None:
 
+        # calculate regression residuals (technically absolute value of residuals)
+
+        regression_predictions = [prediction[0] for prediction in
+                                  regression.predict(
+            np.array(regression_twitter).reshape(-1, 1))]
+
+        regression_residuals = [abs(regression_predictions[i] - regression_vaccine[i])
+                                for i in range(len(regression_predictions))]
+
         fig.add_trace(go.Scatter(
-            x=twitter,
-            y=vaccine,
+            x=regression_twitter,
+            y=regression_vaccine,
             name='Vaccine Rates For Model Data',
             mode='markers'
         ))
 
         fig.add_trace(go.Scatter(
-            x=twitter,
-            y=residuals,
+            x=regression_twitter,
+            y=regression_residuals,
             name='Absolute Value Of Residuals For Model Data',
             mode='markers'
         ))
@@ -168,7 +177,7 @@ def text_block(text: str) -> str:
 
 
 def output(blocks: List[str], path: str, template_path: str) -> None:
-    """Writes an html output file to the speicified path, 
+    """Writes an html output file to the speicified path,
     using the template from the specified template
     path. Inserts the specified blocks of text and
     figures represented by strings. Then opens the file."""
