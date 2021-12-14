@@ -8,6 +8,7 @@ from data_processing import DailyMetricCollection, average_metrics, generate_met
 from tweets import Tweet
 from vaccinations import VaccinationRate
 import nltk
+import ssl
 
 
 def location_stats(vaccine_dict: Dict[str, List[VaccinationRate]],
@@ -45,7 +46,7 @@ def location_stats(vaccine_dict: Dict[str, List[VaccinationRate]],
 def location_correlation(vaccine_dict: Dict[str, List[VaccinationRate]],
                          tweet_dict: Dict[str, List[Tweet]],
                          start: date, end: date) -> Dict[str, float]:
-    """Return a dictionary mapping state codes to the correlation 
+    """Return a dictionary mapping state codes to the correlation
     between state vaccination and state twitter discourse"""
     output = {}
     for key in tweet_dict:
@@ -59,7 +60,14 @@ def location_correlation(vaccine_dict: Dict[str, List[VaccinationRate]],
 
 if __name__ == '__main__':
     # downlad vader lexicon
-    nltk.download('vader_lexicon')
+        try:
+            _create_unverified_https_context = ssl._create_unverified_context
+        except AttributeError:
+            pass
+        else:
+            ssl._create_default_https_context = _create_unverified_https_context
+
+        nltk.download('vader_lexicon')
 
     # launch app
     app = App()
@@ -92,7 +100,7 @@ if __name__ == '__main__':
     average_vaccine_rate = average_metrics(vaccine_metric)
 
     tweet_collection = DailyMetricCollection(average_tweet_polarity, False)
-    vaccine_collection = DailyMetricCollection(average_vaccine_rate, False)
+    vaccine_collection = DailyMetricCollection(average_vaccine_rate, True)
 
     # get interpolated data between start and end dates
     tweet_range = tweet_collection.get(start, end)
@@ -111,28 +119,7 @@ if __name__ == '__main__':
 
     # setup output file
     figures = []
-
-    # graph of entire us vaccination rate
     figures.append(visualization.unwrap_figure(fig.to_html()))
-
-    figures.append(visualization.text_block(
-        'The graph above shows the average vaccination rate in the US on a given day ' +
-        'as a function of the average sentiment of Twitter discourse on the same day. ' +
-        'From this graph we can see that days with higher intensity sentiments (' +
-        'reflecting more positive views towards the vaccine) tend to correspond to ' +
-        'higher vaccination rates. The reverse is also true. The linear model we produced ' +
-        'is shown as a line on the graph. The absolute values of its residuals are shown ' +
-        'towards the bottom.'))
-
-    # chloropleth map by state of correlations
     figures.append(visualization.unwrap_figure(chloropleth.to_html()))
-
-    figures.append(visualization.text_block(
-        'The above graph shows the correlations between vaccination rate and vaccine perception in Twitter discourse. ' +
-        'Darker states have stronger correlations, blue corresponds to negative correlations, and red corresponds to ' +
-        'positive correlations. A strong positive correlation means that the population\'s feelings about the vaccine ' +
-        'on Twitter reflect their rate of getting the vaccine. A strong negative correlation means the opposite. The ' +
-        'weakly correlated states are in between. Their feelings on Twitter do not seem to correspond to their rate ' +
-        'of getting the vaccine in any way.'))
 
     visualization.output(figures, app.output_path, app.template_path)
