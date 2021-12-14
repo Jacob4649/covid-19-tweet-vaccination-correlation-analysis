@@ -43,7 +43,13 @@ class App:
         Preconditions:
             - len(code) == 2
             - code.upper() == code
-            - code.isalpha()"""
+            - code.isalpha()
+            - code in [location.code for location in self.locations]
+
+        >>> app = App()
+        >>> app.location_code_lookup("NA")
+        'New York'
+        """
         # Binary search for state with matching code
         # Posible because states are in alphabetical order
 
@@ -64,7 +70,13 @@ class App:
         state code, or related term matching the
         provided location string.
 
-        Return None if no matching location can be found"""
+        Return None if no matching location can be found
+
+        >>> app = App()
+        >>> app.location_lookup("New York")
+        True
+        >>> app.location_lookup("Lebanon")
+        False"""
         # Exhaust state names, then related terms, before
         # finally checking for state codes
         # matches lowercase for state name and
@@ -84,7 +96,14 @@ class App:
 
 def _contains_word(string: str, word: str) -> bool:
     """Return whether an input string contains a case matched version
-    of the specified word"""
+    of the specified word
+
+    >>> app = App()
+    >>> app._contains_word("Washington is great", "Washington")
+    True
+    >>> app._contains_word("Georgia is great", "Washington")
+    False
+    """
     return string == word or ' ' + word + ' ' in string or \
         (len(string) > len(word) and (string[0:len(word) + 1] == word + ' '
                                       or string[-len(word) - 1:] == ' ' + word))
@@ -109,4 +128,13 @@ def _get_dataset(path: str) -> str:
 
 
 if __name__ == '__main__':
-    pass
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': ['python_ta.contracts', 'math'],
+        'max-line-length': 100,
+        'disable': ['R1705', 'C0200']
+    })
+
+    import doctest
+    doctest.testmod()
