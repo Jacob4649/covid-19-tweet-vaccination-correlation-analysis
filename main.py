@@ -12,70 +12,69 @@ This file is Copyright (c) 2021 Jacob Klimczak, Ryan Merheby and Sean Ryan.
 """
 from datetime import date, timedelta
 from typing import Dict, List, Tuple
+import ssl
+import nltk
+import plotly.express as px
 from app import App
 import vaccinations
 import tweets
 import visualization
-import plotly.express as px
-from data_processing import DailyMetricCollection, average_metrics, generate_metrics, location_dict, calculate_correlation
+from data_processing import DailyMetricCollection, average_metrics, \
+    generate_metrics, location_dict, calculate_correlation
 from tweets import Tweet
 from vaccinations import VaccinationRate
-import nltk
-import ssl
 
 
 def location_stats(vaccine_dict: Dict[str, List[VaccinationRate]],
-                   tweet_dict: Dict[str, List[Tweet]], code: str, start: date,
-                   end: date) -> Tuple[List[float], List[float]]:
+                   tweet_dict: Dict[str, List[Tweet]], code: str, start_date: date,
+                   end_date: date) -> Tuple[List[float], List[float]]:
     """Return a tuple with daily mean vader scores, and daily mean vaccinations
     for the specified state between the start and end dates
 
     Preconditions:
         - len(code) == 2
         - code is a valid state code"""
-    tweets = tweet_dict[code]
-    vaccines = vaccine_dict[code]
+    tweets_metrics = generate_metrics(
+        tweet_dict[code], lambda tweet: (tweet.time_stamp.date(), tweet.polarity))
+    vaccines_metrics = generate_metrics(
+        vaccine_dict[code], lambda vaccine: (vaccine.time_stamp, vaccine.daily))
 
-    tweet_metric = generate_metrics(
-        tweets, lambda tweet: (tweet.time_stamp.date(), tweet.polarity))
-    vaccine_metric = generate_metrics(
-        vaccines, lambda vaccine: (vaccine.time_stamp, vaccine.daily))
+    average_polarity_of_tweets = average_metrics(tweets_metrics)
+    average_rate_of_vaccines = average_metrics(vaccines_metrics)
 
-    average_tweet_polarity = average_metrics(tweet_metric)
-    average_vaccine_rate = average_metrics(vaccine_metric)
+    tweet_data_collection = DailyMetricCollection(average_polarity_of_tweets, False)
+    vaccine_data_collection = DailyMetricCollection(average_rate_of_vaccines, True)
 
-    tweet_collection = DailyMetricCollection(average_tweet_polarity, False)
-    vaccine_collection = DailyMetricCollection(average_vaccine_rate, True)
+    range_of_tweets = tweet_data_collection.get(start_date, end_date)
+    range_of_vaccines = vaccine_data_collection.get(start_date, end_date)
 
-    tweet_range = tweet_collection.get(start, end)
-    vaccine_range = vaccine_collection.get(start, end)
+    tweet_array = list(range_of_tweets)
+    vaccine_array = list(range_of_vaccines)
 
-    tweet_list = list(tweet_range)
-    vaccine_list = list(vaccine_range)
-
-    return tweet_list, vaccine_list
+    return tweet_array, vaccine_array
 
 
 def location_correlation(vaccine_dict: Dict[str, List[VaccinationRate]],
                          tweet_dict: Dict[str, List[Tweet]],
-                         start: date, end: date) -> Dict[str, float]:
+                         start_date: date, end_date: date) -> Dict[str, float]:
     """Return a dictionary mapping state codes to the correlation
     between state vaccination and state twitter discourse"""
     output = {}
     for key in tweet_dict:
         if key in vaccine_dict:
             a, b = location_stats(
-                vaccine_dict, tweet_dict, key, start, end)
+                vaccine_dict, tweet_dict, key, start_date, end_date)
             c = calculate_correlation(a, b)
             output[key] = c
     return output
 
 
 if __name__ == '__main__':
-    # downlad vader lexicon
+    # downloading vader lexicon
     try:
-        # disable ssl (necessary to download vader lexicon)
-        _create_unverified_https_context = ssl._create_unverified_context
+        # disabling ssl checking
+        # downloading vader lexicon may not work on some machines without disabling this
+        _create_unverified_https_context = _ssl.create_unverified_context
     except AttributeError:
         pass
     else:
@@ -126,7 +125,8 @@ if __name__ == '__main__':
 
     # visualize data
     fig = visualization.vaccination_twitter_plot(
-        tweet_list, vaccine_list, 'Vaccination Rate As Related To Ongoing Twitter Discourse In The US')
+        tweet_list, vaccine_list,
+        'Vaccination Rate As Related To Ongoing Twitter Discourse In The US')
 
     chloropleth = visualization.chloropleth(
         correlations, 'Correlation Between Twitter Discourse And Vaccination Rate',
@@ -137,32 +137,36 @@ if __name__ == '__main__':
     figures.append(visualization.unwrap_figure(fig.to_html()))
 
     figures.append(visualization.text_block(
-        'The graph above shows the average vaccination rate per state in the US on a given day ' +
-        'as a function of the average sentiment of Twitter discourse on the same day. ' +
-        'From this graph we can see that days with higher intensity sentiments (' +
-        'reflecting more positive views towards the vaccine) tend to correspond to ' +
-        'higher vaccination rates. The reverse is also true. The linear model we produced ' +
-        'is shown as a line on the graph. The absolute values of its residuals are shown ' +
-        'towards the bottom.'))
+        'The graph above shows the average vaccination rate per state in the US on a given day'
+        + ' as a function of the average sentiment of Twitter discourse on the same day.'
+        + ' From this graph we can see that days with higher intensity sentiments ('
+        + ' reflecting more positive views towards the vaccine) tend to correspond to'
+        + ' higher vaccination rates. The reverse is also true. The linear model we produced'
+        + ' is shown as a line on the graph. The absolute values of its residuals are shown'
+        + ' towards the bottom.'))
 
     figures.append(visualization.unwrap_figure(chloropleth.to_html()))
 
     figures.append(visualization.text_block(
-        'The above graph shows the correlations between vaccination rate and vaccine perception in Twitter discourse. ' +
-        'Darker states have stronger correlations, blue corresponds to negative correlations, and red corresponds to ' +
-        'positive correlations. A strong positive correlation means that the population\'s feelings about the vaccine ' +
-        'on Twitter reflect their rate of getting the vaccine. A strong negative correlation means the opposite. The ' +
-        'weakly correlated states are in between. Their feelings on Twitter do not seem to correspond to their rate ' +
-        'of getting the vaccine in any way.'))
+        'The above graph shows the correlations between vaccination rate and vaccine perception'
+        + ' in Twitter discourse. Darker states have stronger correlations, blue corresponds to'
+        + ' negative correlations, and red corresponds to positive correlations. A strong positive'
+        + ' correlation means that the population\'s feelings about the vaccine on Twitter'
+        + ' reflect their rate of getting the vaccine. A strong negative correlation'
+        + ' means the opposite. The weakly correlated states are in between. Their'
+        + ' feelings on Twitter do not seem to correspond to their rate of getting the'
+        + ' vaccine in any way.'))
 
     # noteable states
     figures.append(visualization.text_block(
         '<div style="text-align: center; font-size: 24pt; padding: 24pt">NOTABLE STATES</div>'))
 
-    figures.append(visualization.text_block('Here are a few close up graphs of the notable states in ' +
-                                            'this analysis. The 3 most and 3 least correlated states ' +
-                                            'are shown. Also worth noting, is that no data is available ' +
-                                            'on states where no Tweets were able to be filtered out for.'))
+    figures.append(visualization.text_block('Here are a few close up graphs of the notable'
+                                            + ' states in this analysis. The 3 most and 3 least '
+                                            + ' correlated states are shown. Also worth noting, '
+                                            + ' is that no data is available'
+                                            + ' on states where no Tweets were able to be filtered'
+                                            + ' out for.'))
 
     # sort states by correlation
     sort = sorted(correlations.keys(),
@@ -176,8 +180,8 @@ if __name__ == '__main__':
                                                    most, start, end)
 
         most_fig = visualization.vaccination_twitter_plot(
-            most_tweets, most_vaccine, f'Vaccination Information For The {title} ' +
-            f'({app.location_code_lookup(most).name})')
+            most_tweets, most_vaccine, f'Vaccination Information For The {title} '
+            + f'({app.location_code_lookup(most).name})')
 
         figures.append(visualization.unwrap_figure(most_fig.to_html()))
 
@@ -194,11 +198,11 @@ if __name__ == '__main__':
         '<div style="text-align: center; font-size: 24pt; padding: 24pt">MODEL PREDICTIONS</div>'))
 
     figures.append(visualization.text_block(
-        'Here we will examine how well a linear model could have predicted vaccination ' +
-        'rates based on Twitter data at an arbitrary moment in time. The graph below has ' +
-        'the same data as the first graph in this report, but this time, the line of best ' +
-        'fit was calculated using only datapoints from the first half of our date range. ' +
-        'The data used to create this model is also displayed on the graph below.'))
+        'Here we will examine how well a linear model could have predicted vaccination'
+        + ' rates based on Twitter data at an arbitrary moment in time. The graph below has'
+        + ' the same data as the first graph in this report, but this time, the line of best'
+        + ' fit was calculated using only datapoints from the first half of our date range.'
+        + ' The data used to create this model is also displayed on the graph below.'))
 
     # filter for data only from first half
     half_tweet_range = tweet_collection.get(start, half)
@@ -209,14 +213,15 @@ if __name__ == '__main__':
 
     # display chart with data
     model = visualization.vaccination_twitter_plot(
-        tweet_list, vaccine_list, 'Vaccination Rate As Related To Ongoing Twitter Discourse In The US',
+        tweet_list, vaccine_list, 'Vaccination Rate As Related To'
+                                  + ' Ongoing Twitter Discourse In The US',
         regression_twitter=half_tweet_list, regression_vaccine=half_vaccine_list)
 
     figures.append(visualization.unwrap_figure(model.to_html()))
 
-    figures.append(visualization.text_block('These results are somewhat surprising, ' +
-                                            'the data used to generate the model can ' +
-                                            'be seen below.'))
+    figures.append(visualization.text_block('These results are somewhat surprising,'
+                                            + ' the data used to generate the model can'
+                                            + ' be seen below.'))
 
     half_x = list(range(len(half_vaccine_list)))
 
@@ -239,9 +244,9 @@ if __name__ == '__main__':
         '<div style="text-align: center; font-size: 24pt; padding: 24pt">RAW DATA</div>'))
 
     figures.append(visualization.text_block(
-        'Here is the raw data for the entire analysis (as opposed to the graphs above ' +
-        'which were half the raw data, and were only used to generate the model in ' +
-        'the section above).'))
+        'Here is the raw data for the entire analysis (as opposed to the graphs above'
+        + ' which were half the raw data, and were only used to generate the model in'
+        + ' the section above).'))
 
     full_x = list(range(len(vaccine_list)))
 
