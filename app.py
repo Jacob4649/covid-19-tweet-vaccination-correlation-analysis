@@ -1,8 +1,8 @@
 """Contains manager class with app state"""
 
-from typing import List, Optional
 from nltk.sentiment import SentimentIntensityAnalyzer
 from locations import Location
+from typing import List, Optional
 import states
 import os
 
@@ -35,7 +35,14 @@ class App:
         self.vaccine_path = _get_dataset('vaccine.csv')
         self.template_path = _get_resource('output-template.html')
         self.output_path = _get_absolute_path('output.html')
+
+
+<< << << < HEAD
         self.locations = states.STATES
+== == == =
+        self.locations = states.unpack_json_into_location_objects(
+            self.states_path)
+>>>>>> > improved coding conventions of app, date_processing, and location files
         self.analyzer = SentimentIntensityAnalyzer()
 
     def location_code_lookup(self, code: str) -> Location:

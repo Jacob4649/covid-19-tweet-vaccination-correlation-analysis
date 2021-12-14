@@ -2,27 +2,27 @@
 Module for generating statistic values by date.
 """
 
-import numpy as np
-from scipy.stats import pearsonr
 from datetime import date, timedelta
 from typing import Any, Callable, Dict, Iterable, List, Tuple, Union
-from locations import Location
 from sklearn.linear_model import LinearRegression
+import numpy as np
+from scipy.stats import pearsonr
+from locations import Location
 
 
 class DailyMetric:
     """Class that wraps around the floating point or integer value of some daily metric"""
 
-    def is_compatible_date(self, date: date) -> bool:
+    def is_compatible_date(self, day: date) -> bool:
         """Return whether this metric has a numeric value for a given date"""
 
-    def _get_measurement_value(self, date: date) -> Union[float, int]:
+    def _get_measurement_value(self, day: date) -> Union[float, int]:
         """Return the value of a numeric metric on a given date"""
 
-    def get(self, date: date) -> Union[float, int]:
+    def get(self, day: date) -> Union[float, int]:
         """Return the measurement value for a given date"""
-        if (self.is_compatible_date(date)):
-            return self._get_measurement_value(date)
+        if self.is_compatible_date(day):
+            return self._get_measurement_value(day)
         else:
             raise ValueError("No measurement found for entered date")
 
@@ -37,19 +37,19 @@ class SingleDateMetric(DailyMetric):
     value: Union[float, int]
     date: 'date'
 
-    def __init__(self, date: date, value: Union[float, int]):
+    def __init__(self, day: date, value: Union[float, int]) -> None:
         """Sets the value and date for this single date metric"""
-        self.date = date
+        self.date = day
         self.value = value
 
-    def _get_measurement_value(self, date: date) -> Union[float, int]:
+    def _get_measurement_value(self, day: date) -> Union[float, int]:
         """Gets the value stored by this single date metric"""
         return self.value
 
-    def is_compatible_date(self, date: date) -> bool:
+    def is_compatible_date(self, day: date) -> bool:
         """Return whether the provided date is the one this
         single date metric is for"""
-        return date == self.date
+        return day == self.date
 
 
 class LinearMetric(DailyMetric):
@@ -62,7 +62,7 @@ class LinearMetric(DailyMetric):
     _integer_outputs: bool
 
     def __init__(self, data: List[Tuple[date, Union[float, int]]],
-                 int_outputs: bool):
+                 int_outputs: bool) -> None:
         """Create a regression model from a set of datapoints.
         Also indicate whether outputs should be floating point
         or integer"""
@@ -71,26 +71,23 @@ class LinearMetric(DailyMetric):
         self._regression = LinearRegression().fit(x_data, y_data)
         self._integer_outputs = int_outputs
 
-    def _convert_date(self, date: date) -> int:
+    def _convert_date(self, day: date) -> int:
         """Convert a date to an integer offset from a base date"""
-        return (date - self._base_date).days
+        return (day - self._base_date).days
 
-    def _generate_data(self, data: List[Tuple[date, Union[float, int]]]) -> Tuple[np.ndarray, np.ndarray]:
+    def _generate_data(self, data: List[Tuple[date, Union[float, int]]]) \
+            -> Tuple[np.ndarray, np.ndarray]:
         """Return a tuple containining a tuple of arrays, the first being the
         array of x values to use to train the regression,
         and the second being an array of y values to use"""
         x_list = [self._convert_date(d[0]) for d in data]
         y_list = [d[1] for d in data]
-        return self._convert_numpy(x_list), self._convert_numpy(y_list)
+        return _convert_numpy(x_list), _convert_numpy(y_list)
 
-    def _convert_numpy(self, data: List[Union[float, int]]) -> np.ndarray:
-        """Return the specified list converted to a numpy array"""
-        return np.array(data).reshape(-1, 1)
-
-    def _get_measurement_value(self, date: date) -> Union[float, int]:
+    def _get_measurement_value(self, day: date) -> Union[float, int]:
         """Return the estimated value of a metric at the specified date"""
-        date_array = [self._convert_date(date)]
-        input_data = self._convert_numpy(date_array)
+        date_array = [self._convert_date(day)]
+        input_data = _convert_numpy(date_array)
         output = self._regression.predict(input_data)
         out_value = output[0][0]
         if self._integer_outputs:
@@ -107,7 +104,7 @@ class LinearExtrapolationMetric(LinearMetric):
     _main_date: date
     _end: bool
 
-    def __init__(self, data: List[SingleDateMetric], end: bool, int_outputs: bool):
+    def __init__(self, data: List[SingleDateMetric], end: bool, int_outputs: bool) -> None:
         """Initialize a linear interpolation metric from the provided
         sorted list of single date metrics, and also indicate whether
         outputs should be integer or floating point, and which endpoint to extrapolate from
@@ -123,11 +120,11 @@ class LinearExtrapolationMetric(LinearMetric):
         else:
             self._main_date = data[0].date
 
-    def is_compatible_date(self, date: date) -> bool:
+    def is_compatible_date(self, day: date) -> bool:
         if self._end:
-            return date > self._main_date
+            return day > self._main_date
         else:
-            return date < self._main_date
+            return day < self._main_date
 
 
 class LinearInterpolationMetric(LinearMetric):
@@ -137,7 +134,8 @@ class LinearInterpolationMetric(LinearMetric):
     _start_date: date
     _end_date: date
 
-    def __init__(self, data: List[SingleDateMetric], start: date, end: date, int_outputs: bool):
+    def __init__(self, data: List[SingleDateMetric], start: date, end: date, int_outputs: bool) \
+            -> None:
         """Initialize a linear interpolation metric from the provided
         sorted list of single date metrics, and also indicate whether
         outputs should be integer or floating point
@@ -150,8 +148,8 @@ class LinearInterpolationMetric(LinearMetric):
         self._start_date = start
         self._end_date = end
 
-    def is_compatible_date(self, date: date) -> bool:
-        return self._start_date <= date <= self._end_date
+    def is_compatible_date(self, day: date) -> bool:
+        return self._start_date <= day <= self._end_date
 
 
 class DailyMetricCollection:
@@ -176,7 +174,7 @@ class DailyMetricCollection:
     interpolation_range: int
     _metrics: List[SingleDateMetric]
 
-    def __init__(self, data: List[SingleDateMetric], int_outputs: bool):
+    def __init__(self, data: List[SingleDateMetric], int_outputs: bool) -> None:
         """Initialize a daily metric collection using a list of single
         date metrics, extrapolating past the endpoints, and interpolating
         between any gaps.
@@ -206,9 +204,9 @@ class DailyMetricCollection:
             rear -= 1
         return rear_outputs + forward_outputs
 
-    def _find_index(self, date: date) -> Tuple[int, bool]:
+    def _find_index(self, day: date) -> Tuple[int, bool]:
         """Return a tuple containing a bool indicating whether the desired date is
-        within the dates of the endpoints of _metrics, and if it is, the 
+        within the dates of the endpoints of _metrics, and if it is, the
         index of the single date metric for the specified date,
         or else the index of the single date metric with the largest date
         less than the desired one. If the date is not within _metrics, the index returned
@@ -220,15 +218,15 @@ class DailyMetricCollection:
         while 0 <= lower < len(self._metrics) and 0 <= upper <= len(self._metrics) \
                 and upper != lower:
             metric = self._metrics[pointer]
-            if date > metric.date:  # too small: upper endpoint, lower bound, correct index
+            if day > metric.date:  # too small: upper endpoint, lower bound, correct index
                 if pointer == len(self._metrics) - 1:
                     return 1, True  # if checking biggest date, and desired is still bigger
                 # desired date less than date at next index
-                elif date < self._metrics[pointer + 1].date:
+                elif day < self._metrics[pointer + 1].date:
                     return pointer, False
                 else:
                     lower = pointer
-            elif date < metric.date:  # too big: upper bound, lower endpoint
+            elif day < metric.date:  # too big: upper bound, lower endpoint
                 if pointer == 0:  # if checking smallest date and desired is still smaller
                     return 0, True
                 else:
@@ -305,7 +303,8 @@ class DailyMetricCollection:
             if next_index == len(self._metrics):
                 # extrapolate endpoint
                 current_metric = self._extrapolate(True)
-            elif next_index < len(self._metrics) and self._metrics[next_index].is_compatible_date(current_date):
+            elif next_index < len(self._metrics) and \
+                    self._metrics[next_index].is_compatible_date(current_date):
                 # move to next metric
                 current_metric = self._metrics[next_index]
                 next_index += 1
@@ -315,15 +314,14 @@ class DailyMetricCollection:
                 next_index += 1
 
 
-def generate_metrics(data: Iterable, transform:
-                     Callable[[Any], Tuple[date, Union[float, int]]]) \
+def generate_metrics(data: Iterable, transform: Callable[[Any], Tuple[date, Union[float, int]]]) \
         -> Iterable[SingleDateMetric]:
     """Return a generator for single date metrics using the specified data,
     and a callable that transforms each entry in the provided data, into a tuple containing
     a date and a value"""
     for point in data:
-        date, value = transform(point)
-        yield SingleDateMetric(date, value)
+        day, value = transform(point)
+        yield SingleDateMetric(day, value)
 
 
 def average_metrics(data: Iterable[SingleDateMetric]) -> List[SingleDateMetric]:
@@ -336,7 +334,7 @@ def average_metrics(data: Iterable[SingleDateMetric]) -> List[SingleDateMetric]:
         else:
             dates[point.date] = [point]
 
-    return [SingleDateMetric(date, sum(d.value for d in dates[date])/len(dates[date]))
+    return [SingleDateMetric(date, sum(d.value for d in dates[date]) / len(dates[date]))
             for date in dates]
 
 
@@ -355,7 +353,30 @@ def location_dict(data: Iterable, location_get: Callable[[Any], Location]) -> Di
     return locations
 
 
+def _convert_numpy(data: List[Union[float, int]]) -> np.ndarray:
+    """Return the specified list converted to a numpy array"""
+    return np.array(data).reshape(-1, 1)
+
+
 def calculate_correlation(tweets: List[float], vaccines: List[float]) -> float:
     """Return the pearson's correlation coefficient between
     the lists of tweet and vaccine information"""
     return pearsonr(tweets, vaccines)[0]
+
+
+if __name__ == '__main__':
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': ['numpy',
+                          'scipy.stats',
+                          'datetime',
+                          'sklearn.linear_model',
+                          'locations'],  # the names (strs) of imported modules
+        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'max-line-length': 100,
+        'disable': ['R1705', 'C0200']
+    })
+    import doctest
+
+    doctest.testmod()
