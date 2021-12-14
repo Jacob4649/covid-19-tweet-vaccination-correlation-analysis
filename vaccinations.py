@@ -49,7 +49,12 @@ class VaccinationRate:
 
 def _filter_row(row: List[str], app: App) -> bool:
     """Return whether a row contains suitable vaccination data,
-    takes a row and an app state bundle"""
+    takes a row and an app state bundle
+
+    >>> app = App()
+    >>> row = ['', '', '']
+    >>> _filter_row(row, app)
+    False"""
     return len(row) == 14 and row[11] != '' and row[2] != '' \
         and app.location_lookup(row[1]) is not None
 
@@ -103,3 +108,7 @@ if __name__ == '__main__':
         'max-line-length': 100,
         'disable': ['R1705', 'C0200']
     })
+
+    import doctest
+
+    doctest.testmod()
