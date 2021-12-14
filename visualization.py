@@ -1,13 +1,13 @@
 """Module for displaying information in graphs and figures"""
 
 from typing import Dict, List
+import webbrowser
 import plotly.graph_objects as go
 from sklearn.linear_model import LinearRegression
 import numpy as np
 from pandas import DataFrame
 import plotly.express as px
 from app import App
-import webbrowser
 
 
 def vaccination_twitter_plot(twitter: List[float],
@@ -24,17 +24,16 @@ def vaccination_twitter_plot(twitter: List[float],
         - len(twitter) == len(vaccine)
         - regression_twitter is None == regression_vaccine is None"""
     # calculate regression
-    t, v = regression_twitter, regression_vaccine
     if regression_twitter is None and regression_vaccine is None:
-        t = twitter
-        v = vaccine
-    regression = _calculate_regression(t, v)
+        regression = _calculate_regression(twitter, vaccine)
+    else:
+        regression = _calculate_regression(regression_twitter, regression_vaccine)
 
     # calculate residuals (technically absolute value of residuals)
 
     predictions = [prediction[0] for prediction in
                    regression.predict(
-        np.array(twitter).reshape(-1, 1))]
+                       np.array(twitter).reshape(-1, 1))]
 
     residuals = [abs(predictions[i] - vaccine[i])
                  for i in range(len(predictions))]
@@ -76,12 +75,11 @@ def vaccination_twitter_plot(twitter: List[float],
 
     if regression_vaccine is not None \
             and regression_twitter is not None:
-
         # calculate regression residuals (technically absolute value of residuals)
 
         regression_predictions = [prediction[0] for prediction in
                                   regression.predict(
-            np.array(regression_twitter).reshape(-1, 1))]
+                                      np.array(regression_twitter).reshape(-1, 1))]
 
         regression_residuals = [abs(regression_predictions[i] - regression_vaccine[i])
                                 for i in range(len(regression_predictions))]
@@ -110,7 +108,7 @@ def vaccination_twitter_plot(twitter: List[float],
     return fig
 
 
-def chloropleth(values: Dict[str, float], title: str, value_name: str, app: App):
+def chloropleth(values: Dict[str, float], title: str, value_name: str, app: App) -> go.Figure:
     """Return a cloropleth figure with the specified title, and value name
     showing some value for each state using a dictionary
     of state codes mapped to values. Takes the name of each state from app state bundle
@@ -164,11 +162,11 @@ def unwrap_figure(figure: str) -> str:
     return figure.replace('<body>', '').replace('</body>', '')
 
 
-def _write_output(output: str, path: str) -> None:
+def _write_output(output_value: str, path: str) -> None:
     """Write the specified html to the specified path
     """
     with open(path, 'w', encoding='utf-8') as file:
-        file.write(output)
+        file.write(output_value)
 
 
 def text_block(text: str) -> str:
@@ -186,12 +184,20 @@ def output(blocks: List[str], path: str, template_path: str) -> None:
     _write_output(body, path)
     webbrowser.open_new(f'file://{path}')
 
+
 if __name__ == '__main__':
     import python_ta
 
     python_ta.check_all(config={
-        'extra-imports': [],
-        'allowed-io': [],
+        'extra-imports': ['plotly.graph_objects',
+                          'sklearn.linear_model',
+                          'numpy',
+                          'pandas',
+                          'plotly.express',
+                          'app',
+                          'webbrowser'],
+        'allowed-io': ['_read_template',
+                       '_write_output'],
         'max-line-length': 100,
-        'disable': ['R1705', 'C0200']
+        'disable': ['R1705', 'C0200', 'C0412']
     })
