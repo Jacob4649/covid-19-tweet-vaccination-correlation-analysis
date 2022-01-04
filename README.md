@@ -1,4 +1,4 @@
-# csc110-project
-How does Twitter sentiment about the COVID-19 vaccine correlate to the vaccination rates in each US state?
+# covid-19-tweet-vaccination-correlation-analysis
+Python dashboard illustrating how Twitter sentiment about the COVID-19 vaccine correlates to the vaccination rates in each US state.
 
-By Sean, Jacob, and Ryan
+By Jacob Klimczak, Ryan Merheby, and Sean Ryan
